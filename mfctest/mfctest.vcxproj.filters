@@ -1,0 +1,156 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="소스 파일">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="헤더 파일">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="리소스 파일">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="mfctest.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="mfctestDlg.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="framework.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="targetver.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="Resource.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="pch.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\An_passnt.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\Bishop.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\Board.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\King.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\Knight.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\Pawn.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\Piece.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\Queen.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\Rook.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="mfctest.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="mfctestDlg.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="pch.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\An_passnt.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\Bishop.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\Board.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\King.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\Knight.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\Pawn.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\Piece.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\Queen.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\Chess_Gna\Chess_Gna\Chess_Gna\Rook.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="mfctest.rc">
+      <Filter>리소스 파일</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="res\mfctest.rc2">
+      <Filter>리소스 파일</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="res\mfctest.ico">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\..\900px-Chess_Board.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\..\bishop_black.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\..\bishop_white.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\..\king_black.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\..\king_white.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\..\knight_black.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\..\knight_white.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\..\pawn_black.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\..\pawn_white.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\..\queen_black.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\..\queen_white.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\..\rook_black.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="..\..\rook_white.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+  </ItemGroup>
+</Project>
