@@ -54,10 +54,10 @@ BEGIN
     "\r\n"
     "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)\r\n"
     "LANGUAGE 18, 1\r\n"
-    "#include ""res\\mfctest.rc2""  // Microsoft Visual C++ ?댁쇅???ㅻⅨ ?꾧뎄?먯꽌 ?몄쭛??由ъ냼?ㅼ엯?덈떎.\r\n"
-    "#include ""l.KOR\\afxres.rc""      // ?쒖? 援ъ꽦 ?붿냼\r\n"
+    "#include ""res\\mfctest.rc2""  // Microsoft Visual C++ ??곸뇚????삘뀲 ?袁㏓럡?癒?퐣 ?紐꾩춿???귐딅꺖??쇱뿯??덈뼄.\r\n"
+    "#include ""l.KOR\\afxres.rc""      // ??? ?닌딄쉐 ?遺용꺖\r\n"
     "#if !defined(_AFXDLL)\r\n"
-    "#include ""l.KOR\\afxribbon.rc""   // MFC 由щ낯 諛?而⑦듃濡?留됰? 由ъ냼??\n"
+    "#include ""l.KOR\\afxribbon.rc""   // MFC ?귐됰궚 獄??뚢뫂?껅에?筌띾맧? ?귐딅꺖??\n"
     "#endif\r\n"
     "#endif\r\n"
     "\0"
@@ -174,10 +174,10 @@ END
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_KOR)
 LANGUAGE 18, 1
-#include "res\mfctest.rc2"  // Microsoft Visual C++ ?댁쇅???ㅻⅨ ?꾧뎄?먯꽌 ?몄쭛??由ъ냼?ㅼ엯?덈떎.
-#include "l.KOR\afxres.rc"      // ?쒖? 援ъ꽦 ?붿냼
+#include "res\mfctest.rc2"  // Microsoft Visual C++ ??곸뇚????삘뀲 ?袁㏓럡?癒?퐣 ?紐꾩춿???귐딅꺖??쇱뿯??덈뼄.
+#include "l.KOR\afxres.rc"      // ??? ?닌딄쉐 ?遺용꺖
 #if !defined(_AFXDLL)
-#include "l.KOR\afxribbon.rc"   // MFC 由щ낯 諛?而⑦듃濡?留됰? 由ъ냼??
+#include "l.KOR\afxribbon.rc"   // MFC ?귐됰궚 獄??뚢뫂?껅에?筌띾맧? ?귐딅꺖??
 #endif
 #endif
 

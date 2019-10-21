@@ -48,7 +48,7 @@ BOOL CmfctestDlg::OnInitDialog()
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 
 	CString str;
-	str.Format(L"C://Users//진화//Desktop//공부하는중//900px-Chess_Board.png");
+	str.Format(L"C:\\Users\\진화\\Desktop\\공부하는중\\mfctest\\MFC_TEST\\mfctest\\Pieces\\900px-Chess_Board.png");
 	mBoard.Load(str);
 	SetWindowPos(NULL, 0, 0, mBoard.GetWidth()+50, mBoard.GetHeight()+50, SWP_NOZORDER);
 	
