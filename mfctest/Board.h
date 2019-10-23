@@ -40,22 +40,20 @@ protected:
 	int turn;
 	int selectPieceIntPos;
 	int checkPos;
-	string selectPieceStrPos;
-	string selectMoveStrPos;
 	bool selected;
 	int selectMoveIntPos;
 	unique_ptr<Piece>* take_a_back_board;
 	unique_ptr<Piece>* mboard;
-	unique_ptr<Piece>* copyBoard;
-	HANDLE handle;
 
 public:
-	Board() = delete;
-	Board(unique_ptr<Piece> board[]);
-	void StartGame();
+	Board();
+	//Board(unique_ptr<Piece> board[]);
+	void MakeBoard(unique_ptr<Piece> board[]);
+	unique_ptr<Piece>* StartGame();
+	Piece* Get_Piece(int pos);
 	char PieceTypeChar(Piece* piece);
 	int ChangePositionStringToInt(string pos);
-	vector<string> PieceSelect(unique_ptr<Piece> board[], int selPos);
+	vector<int> PieceSelect(unique_ptr<Piece> board[], int selPos);
 	void PieceMove(unique_ptr<Piece> board[], int selPos);
 	vector<int> FindDengerousPlace(unique_ptr<Piece> board[],PlayerColor nowPlayer);
 	bool KingMoveSimulation(unique_ptr<Piece> board[],int pos,PlayerColor nowPlayer);
@@ -66,5 +64,6 @@ public:
 	bool KingSideCastling(unique_ptr<Piece> board[],int kingPos,PlayerColor nowPlayer);
 	bool QueenSideCastling(unique_ptr<Piece> board[], int kingPos, PlayerColor nowPlayer);
 	void Promotion(unique_ptr<Piece> board[],int pos);
+	bool Get_Selected();
 
 };

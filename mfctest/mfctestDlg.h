@@ -28,7 +28,18 @@ protected:
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	CImage mBoard;
-	CImage mPiece[2][6];
+	CImage imgBoard;
+	CImage imgPiece[2][6];
+	Board mboard;
+	PlayerColor pColor;
+	unique_ptr<Piece>* board;
+	unique_ptr<Piece>* MakeBoard();
+	int BoardToXCoordinate(int boardPos);
+	int BoardToYCoordinate(int boardPos);
+	int CoordinateToBoard(int x, int y);
+	CString ColorToString(PlayerColor playerColor);
+	CString PieceToString(PieceType pieceType);
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 };

@@ -208,7 +208,6 @@
     <ClCompile Include="Board.cpp" />
     <ClCompile Include="King.cpp" />
     <ClCompile Include="Knight.cpp" />
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="mfctest.cpp" />
     <ClCompile Include="mfctestDlg.cpp" />
     <ClCompile Include="Pawn.cpp" />
@@ -230,18 +229,18 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Pieces\900px-Chess_Board.png" />
-    <Image Include="Pieces\bishop_black.png" />
-    <Image Include="Pieces\bishop_white.png" />
-    <Image Include="Pieces\king_black.png" />
-    <Image Include="Pieces\king_white.png" />
-    <Image Include="Pieces\knight_black.png" />
-    <Image Include="Pieces\knight_white.png" />
-    <Image Include="Pieces\pawn_black.png" />
-    <Image Include="Pieces\pawn_white.png" />
-    <Image Include="Pieces\queen_black.png" />
-    <Image Include="Pieces\queen_white.png" />
-    <Image Include="Pieces\rook_black.png" />
-    <Image Include="Pieces\rook_white.png" />
+    <Image Include="Pieces\Black_BISHOP.png" />
+    <Image Include="Pieces\White_BISHOP.png" />
+    <Image Include="Pieces\Black_KING.png" />
+    <Image Include="Pieces\White_KING.png" />
+    <Image Include="Pieces\Black_KNIGHT.png" />
+    <Image Include="Pieces\White_KNIGHT.png" />
+    <Image Include="Pieces\Black_PAWN.png" />
+    <Image Include="Pieces\White_PAWN.png" />
+    <Image Include="Pieces\Black_QUEEN.png" />
+    <Image Include="Pieces\White_QUEEN.png" />
+    <Image Include="Pieces\Black_ROOK.png" />
+    <Image Include="Pieces\White_ROOK.png" />
     <Image Include="res\mfctest.ico" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -1,6 +1,6 @@
 #include "Board.h"
 
-Board::Board(unique_ptr<Piece> board[])
+Board::Board()
 	: an_passnt()
 	, surrender(false)
 	, check(false)
@@ -12,27 +12,63 @@ Board::Board(unique_ptr<Piece> board[])
 	, queenSideCastling(0)
 	, selectPieceIntPos(0)
 	, checkPos(0)
-	, selectPieceStrPos(" ")
-	, selectMoveStrPos(" ")
 	, take_a_back_board(nullptr)
 	, selected(false)
 
 {
-	handle = GetStdHandle(STD_OUTPUT_HANDLE);
-	mboard = board;
-	copyBoard = new unique_ptr<Piece>[65];
-	StartGame();
+	mboard = nullptr;
 }
 
-void Board::StartGame()
+void Board::MakeBoard(unique_ptr<Piece> board[])
 {
+	mboard = board;
+}
 
-		
-		
+unique_ptr<Piece>* Board::StartGame()
+{
+	unique_ptr<Piece>* board = new unique_ptr < Piece>[65];
+	board[1] = std::make_unique<Rook>(PlayerColor::White, 1);
+	board[2] = std::make_unique<Knight>(PlayerColor::White, 2);
+	board[3] = std::make_unique<Bishop>(PlayerColor::White, 3);
+	board[4] = std::make_unique<Queen>(PlayerColor::White, 4);
+	board[5] = std::make_unique<King>(PlayerColor::White, 5);
+	board[6] = std::make_unique<Bishop>(PlayerColor::White, 6);
+	board[7] = std::make_unique<Knight>(PlayerColor::White, 7);
+	board[8] = std::make_unique<Rook>(PlayerColor::White, 8);
+	board[9] = std::make_unique<Pawn>(PlayerColor::White, 9);
+	board[10] = std::make_unique<Pawn>(PlayerColor::White, 10);
+	board[11] = std::make_unique<Pawn>(PlayerColor::White, 11);
+	board[12] = std::make_unique<Pawn>(PlayerColor::White, 12);
+	board[13] = std::make_unique<Pawn>(PlayerColor::White, 13);
+	board[14] = std::make_unique<Pawn>(PlayerColor::White, 14);
+	board[15] = std::make_unique<Pawn>(PlayerColor::White, 15);
+	board[16] = std::make_unique<Pawn>(PlayerColor::White, 16);
+
+	board[57] = std::make_unique<Rook>(PlayerColor::Black, 57);
+	board[58] = std::make_unique<Knight>(PlayerColor::Black, 58);
+	board[59] = std::make_unique<Bishop>(PlayerColor::Black, 59);
+	board[60] = std::make_unique<Queen>(PlayerColor::Black, 60);
+	board[61] = std::make_unique<King>(PlayerColor::Black, 61);
+	board[62] = std::make_unique<Bishop>(PlayerColor::Black, 62);
+	board[63] = std::make_unique<Knight>(PlayerColor::Black, 63);
+	board[64] = std::make_unique<Rook>(PlayerColor::Black, 64);
+	board[49] = std::make_unique<Pawn>(PlayerColor::Black, 49);
+	board[50] = std::make_unique<Pawn>(PlayerColor::Black, 50);
+	board[51] = std::make_unique<Pawn>(PlayerColor::Black, 51);
+	board[52] = std::make_unique<Pawn>(PlayerColor::Black, 52);
+	board[53] = std::make_unique<Pawn>(PlayerColor::Black, 53);
+	board[54] = std::make_unique<Pawn>(PlayerColor::Black, 54);
+	board[55] = std::make_unique<Pawn>(PlayerColor::Black, 55);
+	board[56] = std::make_unique<Pawn>(PlayerColor::Black, 56);
+
+	return board;
 }
 
 
-
+Piece* Board::Get_Piece(int pos)
+{
+	return mboard[pos].get();
+}
 
 int Board::ChangePositionStringToInt(string pos)
 {
@@ -109,9 +145,9 @@ char Board::PieceTypeChar(Piece* piece)
 
 }
 
-vector<string> Board::PieceSelect(unique_ptr<Piece> board[], int selPos)
+vector<int> Board::PieceSelect(unique_ptr<Piece> board[], int selPos)
 {
-	vector<string> res;
+	
 	
 
 	if (!selected)
@@ -119,33 +155,33 @@ vector<string> Board::PieceSelect(unique_ptr<Piece> board[], int selPos)
 		selectPieceIntPos = selPos;
 		if (selectPieceIntPos == 99)
 			surrender = true;
-		else if (mboard[selectPieceIntPos] == nullptr)
+		else if (board[selectPieceIntPos] == nullptr)
 		{
-			res.push_back("null");
-			return res;
+			movablePlace.push_back(98);
+			return movablePlace;
 		}
-		else if (mboard[selectPieceIntPos]->get_PlayerColor() == PlayerColor(turn % 2))
+		else if (board[selectPieceIntPos]->get_PlayerColor() == PlayerColor(turn % 2))
 		{
 			selected = true;
 			//왕 움직임
-			if (mboard[selectPieceIntPos]->get_PieceType() == PieceType::KING)
+			if (board[selectPieceIntPos]->get_PieceType() == PieceType::KING)
 			{
-				movablePlace = KingMovable(mboard, mboard[selectPieceIntPos]->CanMovePlace(mboard), selectPieceIntPos, PlayerColor(turn % 2));
-				if (KingSideCastling(mboard, selectPieceIntPos, PlayerColor(turn % 2)))
+				movablePlace = KingMovable(board, board[selectPieceIntPos]->CanMovePlace(board), selectPieceIntPos, PlayerColor(turn % 2));
+				if (KingSideCastling(board, selectPieceIntPos, PlayerColor(turn % 2)))
 				{
 					movablePlace.push_back(selectPieceIntPos + 2);
 					kingSideCastling = selectPieceIntPos + 2;
 				}
-				if (QueenSideCastling(mboard, selectPieceIntPos, PlayerColor(turn % 2)))
+				if (QueenSideCastling(board, selectPieceIntPos, PlayerColor(turn % 2)))
 				{
 					movablePlace.push_back(selectPieceIntPos - 2);
 					queenSideCastling = selectPieceIntPos - 2;
 				}
 			}
 			//앙파상
-			else if (mboard[selectPieceIntPos]->get_PieceType() == PieceType::PAWN)
+			else if (board[selectPieceIntPos]->get_PieceType() == PieceType::PAWN)
 			{
-				movablePlace = mboard[selectPieceIntPos]->CanMovePlace(mboard);
+				movablePlace = board[selectPieceIntPos]->CanMovePlace(board);
 				if (an_passnt.pawnPos != 0)
 				{
 					if (turn % 2 != an_passnt.turn % 2)
@@ -159,13 +195,13 @@ vector<string> Board::PieceSelect(unique_ptr<Piece> board[], int selPos)
 				}
 			}
 			else
-				movablePlace = mboard[selectPieceIntPos]->CanMovePlace(mboard);
+				movablePlace = board[selectPieceIntPos]->CanMovePlace(board);
 			
 
 			if (check)
 			{
-				if (mboard[selectPieceIntPos]->get_PieceType() == PieceType::KING) //왕 움직임
-					movablePlace = KingMovable(mboard, mboard[selectPieceIntPos]->CanMovePlace(mboard), selectPieceIntPos, PlayerColor(turn % 2));
+				if (board[selectPieceIntPos]->get_PieceType() == PieceType::KING) //왕 움직임
+					movablePlace = KingMovable(board, board[selectPieceIntPos]->CanMovePlace(board), selectPieceIntPos, PlayerColor(turn % 2));
 				else
 				{
 					vector<int> move_ptr;
@@ -182,16 +218,7 @@ vector<string> Board::PieceSelect(unique_ptr<Piece> board[], int selPos)
 			}
 		}
 	}
-	if (movablePlace.size() != 0)
-	{
-		for (int i = 0; i < movablePlace.size(); i++)
-		{
-			char* str1="";
-			_itoa_s(movablePlace[i], str1, 20, 10);
-			res.push_back(str1);
-		}
-		return res;
-	}
+	return movablePlace;
 }
 void Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 {
@@ -201,7 +228,7 @@ void Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 	{
 		if (selectMoveIntPos == 99)
 			surrender = true;
-		else if (selectMoveStrPos == selectPieceStrPos)
+		else if (selectMoveIntPos == selectPieceIntPos)
 		{
 			selected = false;
 			find_pos = false;
@@ -209,9 +236,7 @@ void Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 			kingSideCastling = 0;
 			queenSideCastling = 0;
 			selectPieceIntPos = 0;
-			selectPieceStrPos.clear();
 			selectMoveIntPos = 0;
-			selectMoveStrPos.clear();
 			movablePlace.clear();
 			return;
 		}
@@ -231,30 +256,30 @@ void Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 		if (find_pos)
 		{
 			int enemyKing;
-			mboard[selectMoveIntPos] = move(mboard[selectPieceIntPos]);
-			mboard[selectMoveIntPos]->Set_piecePosition(selectMoveIntPos);
-			mboard[selectMoveIntPos]->Set_doMove(true);
+			board[selectMoveIntPos] = move(board[selectPieceIntPos]);
+			board[selectMoveIntPos]->Set_piecePosition(selectMoveIntPos);
+			board[selectMoveIntPos]->Set_doMove(true);
 
 			//캐슬링
 			if (selectMoveIntPos == kingSideCastling)
 			{
 				selectMoveIntPos = selectMoveIntPos - 1;
-				mboard[selectMoveIntPos] = move(mboard[selectPieceIntPos + 3]);
-				mboard[selectMoveIntPos]->Set_piecePosition(selectMoveIntPos);
-				mboard[selectMoveIntPos]->Set_doMove(true);
+				board[selectMoveIntPos] = move(board[selectPieceIntPos + 3]);
+				board[selectMoveIntPos]->Set_piecePosition(selectMoveIntPos);
+				board[selectMoveIntPos]->Set_doMove(true);
 				kingSideCastling = 0;
 			}
 			else if (selectMoveIntPos == queenSideCastling)
 			{
 				selectMoveIntPos = selectMoveIntPos + 1;
-				mboard[selectMoveIntPos] = move(mboard[selectPieceIntPos - 4]);
-				mboard[selectMoveIntPos]->Set_piecePosition(selectMoveIntPos);
-				mboard[selectMoveIntPos]->Set_doMove(true);
+				board[selectMoveIntPos] = move(board[selectPieceIntPos - 4]);
+				board[selectMoveIntPos]->Set_piecePosition(selectMoveIntPos);
+				board[selectMoveIntPos]->Set_doMove(true);
 				queenSideCastling = 0;
 			}
 
 			//앙파상
-			if (mboard[selectMoveIntPos]->get_PieceType() == PieceType::PAWN)
+			if (board[selectMoveIntPos]->get_PieceType() == PieceType::PAWN)
 			{
 				if (abs(selectPieceIntPos - selectMoveIntPos) == 16)
 				{
@@ -270,7 +295,7 @@ void Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 				}
 				if (selectMoveIntPos == an_passnt.an_passntPos)
 				{
-					mboard[an_passnt.pawnPos] = nullptr;
+					board[an_passnt.pawnPos] = nullptr;
 					an_passnt.an_passntPos = 0;
 					an_passnt.pawnPos = 0;
 					an_passnt.turn = 0;
@@ -278,26 +303,26 @@ void Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 			}
 
 			//프로모션 
-			if (mboard[selectMoveIntPos]->get_PieceType() == PieceType::PAWN)
+			if (board[selectMoveIntPos]->get_PieceType() == PieceType::PAWN)
 			{
 				if (selectMoveIntPos / 8 == 0 || selectMoveIntPos / 8 == 7)
 				{
 					int ptr = selectPieceIntPos;
 					selectPieceIntPos = selectMoveIntPos;
-					Promotion(mboard, selectMoveIntPos);
+					Promotion(board, selectMoveIntPos);
 					selectPieceIntPos = ptr;
 				}
 			}
 
 
 			//체크
-			if (enemyKing = Check_Check(mboard, selectMoveIntPos, PlayerColor(turn % 2))) //체크 확인
+			if (enemyKing = Check_Check(board, selectMoveIntPos, PlayerColor(turn % 2))) //체크 확인
 			{
 				check = true;
 				checkPos = selectMoveIntPos;
 			}
 
-			if (StalemateCheck(mboard, PlayerColor(turn % 2)))
+			if (StalemateCheck(board, PlayerColor(turn % 2)))
 			{
 				check = false;
 				checkmate = false;
@@ -307,9 +332,7 @@ void Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 				kingSideCastling = 0;
 				queenSideCastling = 0;
 				selectPieceIntPos = 0;
-				selectPieceStrPos.clear();
 				selectMoveIntPos = 0;
-				selectMoveStrPos.clear();
 				movablePlace.clear();
 				turn++;
 			}
@@ -319,18 +342,18 @@ void Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 				checkMovable.clear();
 				checkMovable.push_back(checkPos);
 				vector<int> move_ptr;
-				move_ptr = mboard[checkPos]->CanMovePlace(mboard);
+				move_ptr = board[checkPos]->CanMovePlace(board);
 				for (int m = 0; m < move_ptr.size(); m++) //체크인 말이 움직이는곳이 체크인곳만 넣기.
 				{
-					unique_ptr<Piece> piece_ptr = move(mboard[move_ptr[m]]);
-					mboard[move_ptr[m]] = move(mboard[checkPos]);
-					mboard[move_ptr[m]]->Set_piecePosition(move_ptr[m]);
-					int int_ptr = Check_Check(mboard, move_ptr[m], PlayerColor(turn % 2));
+					unique_ptr<Piece> piece_ptr = move(board[move_ptr[m]]);
+					board[move_ptr[m]] = move(board[checkPos]);
+					board[move_ptr[m]]->Set_piecePosition(move_ptr[m]);
+					int int_ptr = Check_Check(board, move_ptr[m], PlayerColor(turn % 2));
 					if (enemyKing == int_ptr)
 						checkMovable.push_back(move_ptr[m]);
-					mboard[checkPos] = move(mboard[move_ptr[m]]);
-					mboard[checkPos]->Set_piecePosition(checkPos);
-					mboard[move_ptr[m]] = move(piece_ptr);
+					board[checkPos] = move(board[move_ptr[m]]);
+					board[checkPos]->Set_piecePosition(checkPos);
+					board[move_ptr[m]] = move(piece_ptr);
 				}
 				if (CheckmateMoveSimulation(mboard, enemyKing, checkMovable, PlayerColor(turn % 2)))
 				{
@@ -361,9 +384,7 @@ void Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 			kingSideCastling = 0;
 			queenSideCastling = 0;
 			selectPieceIntPos = 0;
-			selectPieceStrPos.clear();
 			selectMoveIntPos = 0;
-			selectMoveStrPos.clear();
 			movablePlace.clear();
 			if (an_passnt.turn != turn)
 			{
@@ -593,4 +614,9 @@ void Board::Promotion(unique_ptr<Piece> board[],int pos)
 	}
 	selectPieceIntPos = 0;
 	//Draw_Board();
+}
+
+bool Board::Get_Selected()
+{
+	return selected;
 }
