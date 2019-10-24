@@ -24,12 +24,15 @@ public:
 protected:
 	HICON m_hIcon;
 
+	int selectX;
+	int selectY;
 	// 생성된 메시지 맵 함수
 	virtual BOOL OnInitDialog();
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	CImage imgBoard;
-	CImage imgPiece[2][6];
+	CImage imgSelect;
+	CImage imgAttack;
 	Board mboard;
 	PlayerColor pColor;
 	unique_ptr<Piece>* board;

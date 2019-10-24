@@ -160,6 +160,11 @@ vector<int> Board::PieceSelect(unique_ptr<Piece> board[], int selPos)
 			movablePlace.push_back(98);
 			return movablePlace;
 		}
+		else if (board[selectPieceIntPos]->get_PlayerColor() != PlayerColor(turn % 2))
+		{
+			movablePlace.push_back(98);
+			return movablePlace;
+		}
 		else if (board[selectPieceIntPos]->get_PlayerColor() == PlayerColor(turn % 2))
 		{
 			selected = true;
@@ -220,7 +225,7 @@ vector<int> Board::PieceSelect(unique_ptr<Piece> board[], int selPos)
 	}
 	return movablePlace;
 }
-void Board::PieceMove(unique_ptr<Piece> board[], int selPos)
+int Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 {
 	selectMoveIntPos = selPos;
 	bool find_pos;
@@ -238,7 +243,7 @@ void Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 			selectPieceIntPos = 0;
 			selectMoveIntPos = 0;
 			movablePlace.clear();
-			return;
+			return 99;
 		}
 
 		for (int m = 0; m < movablePlace.size(); m++)
@@ -393,9 +398,12 @@ void Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 				an_passnt.turn = 0;
 			}
 			turn++;
+			return 99;
 		}
 		else if (!find_pos)
-			return;
+		{
+			return 98;
+		}
 
 	}
 

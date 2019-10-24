@@ -229,7 +229,9 @@
   </ItemGroup>
   <ItemGroup>
     <Image Include="Pieces\900px-Chess_Board.png" />
+    <Image Include="Pieces\Attack_Red.png" />
     <Image Include="Pieces\Black_BISHOP.png" />
+    <Image Include="Pieces\Select_Green.png" />
     <Image Include="Pieces\White_BISHOP.png" />
     <Image Include="Pieces\Black_KING.png" />
     <Image Include="Pieces\White_KING.png" />

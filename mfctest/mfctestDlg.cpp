@@ -7,7 +7,8 @@
 #include "mfctest.h"
 #include "mfctestDlg.h"
 #include "afxdialogex.h"
-
+#include <atlImage.h>
+#pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #ifdef _DEBUG
 #define new DEBUG_NEW
 #endif
@@ -49,25 +50,25 @@ BOOL CmfctestDlg::OnInitDialog()
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
 	
-	CString str;
-	str.Format(L"C:\\Users\\진화\\Desktop\\공부하는중\\mfctest\\MFC_TEST\\mfctest\\Pieces\\900px-Chess_Board.png");
-	imgBoard.Load(str);
-	SetWindowPos(NULL, 0, 0, imgBoard.GetWidth()+50, imgBoard.GetHeight()+50, SWP_NOZORDER);
+	
+	imgBoard.Load(L"Pieces\\900px-Chess_Board.png");
+	imgSelect.Load(L"Pieces\\Select_Green.png");
+	imgAttack.Load(L"Pieces\\Attack_Red.png");
+
+	SetWindowPos(NULL, 0, 0, imgBoard.GetWidth() + 50, imgBoard.GetHeight() + 50, SWP_NOZORDER);
+
 	board = MakeBoard();
-	for (int c = 0; c < 2; c++)
+	for (int i = 1; i < 65; i++)
 	{
-		CString color;
-		color = ColorToString(PlayerColor(c));
-		for (int p = 0; p < 6; p++)
+		Piece* ptr = board[i].get();
+		if (ptr != nullptr)
 		{
+			
 			CString fileName;
-			CString piece;
-			piece = PieceToString(PieceType(p));
-			fileName.Format(L"C:\\Users\\진화\\Desktop\\공부하는중\\mfctest\\MFC_TEST\\mfctest\\Pieces\\%s_%s.png", color, piece);
-			imgPiece[c][p].Load(fileName);
+			fileName.Format(L"Pieces\\%s_%s.png", ColorToString(ptr->get_PlayerColor()), PieceToString(ptr->get_PieceType()));
+			ptr->imgsrc.Load(fileName);
 		}
 	}
-
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -97,15 +98,15 @@ void CmfctestDlg::OnPaint()
 	else
 	{
 		//CDialogEx::OnPaint();
+		cout << "그림그림" << endl;
 		CPaintDC dc(this);
 		imgBoard.Draw(dc, 0, 0);
-		//mPiece[1][5].Draw(dc, 0, 560);
 		for (int i = 1; i < 65; i++)
 		{
 			Piece* ptr = board[i].get();
-			if (ptr != NULL)
+			if (ptr != nullptr)
 			{
-				imgPiece[ptr->get_PlayerColor()][ptr->get_PieceType()].Draw(dc, BoardToXCoordinate(i), BoardToYCoordinate(i));
+				ptr->imgsrc.Draw(dc, BoardToXCoordinate(i), BoardToYCoordinate(i));
 			}
 		}
 	}
@@ -117,6 +118,8 @@ HCURSOR CmfctestDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
+
+
 
 unique_ptr<Piece>* CmfctestDlg::MakeBoard()
 {
@@ -235,7 +238,7 @@ void CmfctestDlg::OnLButtonDown(UINT nFlags, CPoint point)
 
 	vector<int> movable;
 
-	CClientDC dc(this);
+	CClientDC dc1(this);
 
 	int x = point.x/80;
 	int y = point.y/80;
@@ -246,12 +249,32 @@ void CmfctestDlg::OnLButtonDown(UINT nFlags, CPoint point)
 	if (!mboard.Get_Selected())
 	{
 		movable=mboard.PieceSelect(board,CoordinateToBoard(x, y));
+		if (movable[0] != 98)
+		{
+			imgSelect.AlphaBlend(dc1, x + 3, y + 3, 100);
+			for (int i = 0; i < movable.size(); i++)
+			{
+				imgAttack.AlphaBlend(dc1, BoardToXCoordinate(movable[i]) + 3, BoardToYCoordinate(movable[i]) + 3, 100);
+			}
+		}
+		selectX = x;
+		selectY = y;
 	}
+
 	else if (mboard.Get_Selected())
 	{
-		mboard.PieceMove(board, CoordinateToBoard(x, y));
+		int ch_num;
 		int ptr = CoordinateToBoard(x, y);
-		imgPiece[board[ptr]->get_PlayerColor()][board[ptr]->get_PieceType()].Draw(dc, x, y);
+		int ptr1 = CoordinateToBoard(selectX, selectY);
+		ch_num=mboard.PieceMove(board, CoordinateToBoard(x, y));
+		if (ch_num == 99)
+		{
+			this->InvalidateRect(NULL, TRUE);
+			cout << ptr1 << "   " << ptr << endl;
+			if (board[ptr1] == nullptr)
+				cout << "NO!" << endl;
+		}
+		
 	}
 
 	CDialogEx::OnLButtonDown(nFlags, point);

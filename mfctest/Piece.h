@@ -3,6 +3,7 @@
 #include<algorithm>
 #include<vector>
 #include<string>
+#include <atlImage.h>
 
 using namespace std;
 
@@ -23,6 +24,7 @@ protected:
 	PlayerColor playerColor;
 	int piecePosition;
 	bool doMove;
+	
 
 public:
 	Piece() = delete;
@@ -37,4 +39,5 @@ public:
 	void Set_doMove(bool change);
 	bool Get_doMove();
 	int Get_piecePosition();
+	CImage imgsrc;
 };

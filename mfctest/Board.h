@@ -54,7 +54,7 @@ public:
 	char PieceTypeChar(Piece* piece);
 	int ChangePositionStringToInt(string pos);
 	vector<int> PieceSelect(unique_ptr<Piece> board[], int selPos);
-	void PieceMove(unique_ptr<Piece> board[], int selPos);
+	int PieceMove(unique_ptr<Piece> board[], int selPos);
 	vector<int> FindDengerousPlace(unique_ptr<Piece> board[],PlayerColor nowPlayer);
 	bool KingMoveSimulation(unique_ptr<Piece> board[],int pos,PlayerColor nowPlayer);
 	vector<int> KingMovable(unique_ptr<Piece> board[], vector<int> pos,int selectPos, PlayerColor nowPlayer);

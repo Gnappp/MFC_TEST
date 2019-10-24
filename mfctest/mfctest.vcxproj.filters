@@ -110,9 +110,6 @@
     <Image Include="res\mfctest.ico">
       <Filter>리소스 파일</Filter>
     </Image>
-    <Image Include="Pieces\900px-Chess_Board.png">
-      <Filter>리소스 파일</Filter>
-    </Image>
     <Image Include="Pieces\Black_BISHOP.png">
       <Filter>리소스 파일</Filter>
     </Image>
@@ -147,6 +144,15 @@
       <Filter>리소스 파일</Filter>
     </Image>
     <Image Include="Pieces\White_ROOK.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Pieces\Attack_Red.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Pieces\Select_Green.png">
+      <Filter>리소스 파일</Filter>
+    </Image>
+    <Image Include="Pieces\900px-Chess_Board.png">
       <Filter>리소스 파일</Filter>
     </Image>
   </ItemGroup>

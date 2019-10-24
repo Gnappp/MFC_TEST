@@ -6,6 +6,7 @@ Piece::Piece(PieceType mPieceType, PlayerColor mPlayerColor, int mPiecePosition)
 	playerColor = mPlayerColor;
 	piecePosition = mPiecePosition;
 	doMove = false;
+	
 }
 
 PlayerColor Piece::get_PlayerColor()
