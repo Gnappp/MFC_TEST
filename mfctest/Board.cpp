@@ -4,6 +4,7 @@ Board::Board()
 	: an_passnt()
 	, surrender(false)
 	, check(false)
+	, castling(false)
 	, checkmate(false)
 	, stalemate(false)
 	, turn(0)
@@ -16,13 +17,8 @@ Board::Board()
 	, selected(false)
 
 {
-	mboard = nullptr;
 }
 
-void Board::MakeBoard(unique_ptr<Piece> board[])
-{
-	mboard = board;
-}
 
 unique_ptr<Piece>* Board::StartGame()
 {
@@ -65,9 +61,9 @@ unique_ptr<Piece>* Board::StartGame()
 }
 
 
-Piece* Board::Get_Piece(int pos)
+Piece* Board::Get_Piece(unique_ptr<Piece> board[],int pos)
 {
-	return mboard[pos].get();
+	return board[pos].get();
 }
 
 int Board::ChangePositionStringToInt(string pos)
@@ -148,8 +144,6 @@ char Board::PieceTypeChar(Piece* piece)
 vector<int> Board::PieceSelect(unique_ptr<Piece> board[], int selPos)
 {
 	
-	
-
 	if (!selected)
 	{
 		selectPieceIntPos = selPos;
@@ -171,7 +165,10 @@ vector<int> Board::PieceSelect(unique_ptr<Piece> board[], int selPos)
 			//왕 움직임
 			if (board[selectPieceIntPos]->get_PieceType() == PieceType::KING)
 			{
-				movablePlace = KingMovable(board, board[selectPieceIntPos]->CanMovePlace(board), selectPieceIntPos, PlayerColor(turn % 2));
+				vector<int> king_ptr = board[selectPieceIntPos]->CanMovePlace(board);
+				movablePlace = KingMovable(board, king_ptr, selectPieceIntPos, PlayerColor(turn % 2));
+
+				//캐슬링
 				if (KingSideCastling(board, selectPieceIntPos, PlayerColor(turn % 2)))
 				{
 					movablePlace.push_back(selectPieceIntPos + 2);
@@ -360,10 +357,10 @@ int Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 					board[checkPos]->Set_piecePosition(checkPos);
 					board[move_ptr[m]] = move(piece_ptr);
 				}
-				if (CheckmateMoveSimulation(mboard, enemyKing, checkMovable, PlayerColor(turn % 2)))
+				if (CheckmateMoveSimulation(board, enemyKing, checkMovable, PlayerColor(turn % 2)))
 				{
 					vector<int> v_ptr;
-					v_ptr = KingMovable(mboard, mboard[enemyKing]->CanMovePlace(mboard), enemyKing, PlayerColor((turn + 1) % 2));
+					v_ptr = KingMovable(board, board[enemyKing]->CanMovePlace(board), enemyKing, PlayerColor((turn + 1) % 2));
 					if (v_ptr.size() == 0)
 					{
 						check = false;
@@ -398,11 +395,11 @@ int Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 				an_passnt.turn = 0;
 			}
 			turn++;
-			return 99;
+			return 99; //성공 99
 		}
 		else if (!find_pos)
 		{
-			return 98;
+			return 98; //실패 98
 		}
 
 	}
@@ -448,7 +445,7 @@ vector<int> Board::KingMovable(unique_ptr<Piece> board[], vector<int> pos,int se
 		unique_ptr<Piece> ptr;
 		ptr = move(board[pos[i]]);
 		board[pos[i]] = move(board[selectPos]);
-		if (!KingMoveSimulation(mboard, pos[i], nowPlayer))
+		if (!KingMoveSimulation(board, pos[i], nowPlayer))
 		{
 			board[selectPos] = move(board[pos[i]]);
 			board[pos[i]] = move(ptr);
@@ -533,54 +530,62 @@ bool Board::KingSideCastling(unique_ptr<Piece> board[],int kingPos,PlayerColor n
 {
 	bool check;
 	int rookPos = kingPos+3;
-	vector<int> dengerousPlace = FindDengerousPlace(board, nowPlayer);
-	if (board[rookPos] != nullptr)
+	if (!board[kingPos]->Get_doMove())
 	{
-		if (board[rookPos]->get_PieceType() == PieceType::ROOK)
+		vector<int> dengerousPlace = FindDengerousPlace(board, nowPlayer);
+		if (board[rookPos] != nullptr)
 		{
-			if (!board[rookPos]->Get_doMove())
+			if (board[rookPos]->get_PieceType() == PieceType::ROOK)
 			{
-				for (int i = kingPos + 1; i < rookPos; i++)
+				if (!board[rookPos]->Get_doMove() && !board[kingPos]->Get_doMove())
 				{
-					if (board[i] != nullptr)
-						return false;
-				}
-				for (int i = 0; i < dengerousPlace.size(); i++)
-				{
-					if (dengerousPlace[i] == kingPos+2)
-						return false;
+					for (int i = kingPos + 1; i < rookPos; i++)
+					{
+						if (board[i] != nullptr)
+							return false;
+					}
+					for (int i = 0; i < dengerousPlace.size(); i++)
+					{
+						if (dengerousPlace[i] == kingPos + 2)
+							return false;
+					}
 				}
 			}
 		}
+		return true;
 	}
-	return true;
+	return false;
 }
 
 bool Board::QueenSideCastling(unique_ptr<Piece> board[], int kingPos, PlayerColor nowPlayer)
 {
 	bool check;
 	int rookPos = kingPos - 4;
-	vector<int> dengerousPlace = FindDengerousPlace(board, nowPlayer);
-	if (board[rookPos] != nullptr)
+	if (!board[kingPos]->Get_doMove())
 	{
-		if (board[rookPos]->get_PieceType() == PieceType::ROOK)
+		vector<int> dengerousPlace = FindDengerousPlace(board, nowPlayer);
+		if (board[rookPos] != nullptr)
 		{
-			if (!board[rookPos]->Get_doMove())
+			if (board[rookPos]->get_PieceType() == PieceType::ROOK)
 			{
-				for (int i = kingPos - 1; i > rookPos; i--)
+				if (!board[rookPos]->Get_doMove() && !board[kingPos]->Get_doMove())
 				{
-					if (board[i] != nullptr)
-						return false;
-				}
-				for (int i = 0; i < dengerousPlace.size(); i++)
-				{
-					if (dengerousPlace[i] == kingPos + 2)
-						return false;
+					for (int i = kingPos - 1; i > rookPos; i--)
+					{
+						if (board[i] != nullptr)
+							return false;
+					}
+					for (int i = 0; i < dengerousPlace.size(); i++)
+					{
+						if (dengerousPlace[i] == kingPos + 2)
+							return false;
+					}
 				}
 			}
+			return true;
 		}
 	}
-	return true;
+	return false;
 }
 
 void Board::Promotion(unique_ptr<Piece> board[],int pos)
@@ -627,4 +632,24 @@ void Board::Promotion(unique_ptr<Piece> board[],int pos)
 bool Board::Get_Selected()
 {
 	return selected;
+}
+
+int Board::Get_turn()
+{
+	return turn;
+}
+
+bool Board::Get_check()
+{
+	return check;
+}
+
+bool Board::Get_checkmate()
+{
+	return checkmate;
+}
+
+bool Board::Get_stalemate()
+{
+	return stalemate;
 }

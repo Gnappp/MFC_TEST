@@ -35,6 +35,7 @@ protected:
 	bool check;
 	bool checkmate;
 	bool stalemate;
+	bool castling;
 	int kingSideCastling;
 	int queenSideCastling;
 	int turn;
@@ -43,14 +44,13 @@ protected:
 	bool selected;
 	int selectMoveIntPos;
 	unique_ptr<Piece>* take_a_back_board;
-	unique_ptr<Piece>* mboard;
 
 public:
 	Board();
 	//Board(unique_ptr<Piece> board[]);
 	void MakeBoard(unique_ptr<Piece> board[]);
 	unique_ptr<Piece>* StartGame();
-	Piece* Get_Piece(int pos);
+	Piece* Get_Piece(unique_ptr<Piece> board[],int pos);
 	char PieceTypeChar(Piece* piece);
 	int ChangePositionStringToInt(string pos);
 	vector<int> PieceSelect(unique_ptr<Piece> board[], int selPos);
@@ -65,5 +65,9 @@ public:
 	bool QueenSideCastling(unique_ptr<Piece> board[], int kingPos, PlayerColor nowPlayer);
 	void Promotion(unique_ptr<Piece> board[],int pos);
 	bool Get_Selected();
+	int Get_turn();
+	bool Get_check();
+	bool Get_checkmate();
+	bool Get_stalemate();
 
 };

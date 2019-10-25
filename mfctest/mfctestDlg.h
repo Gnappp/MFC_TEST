@@ -33,6 +33,15 @@ protected:
 	CImage imgBoard;
 	CImage imgSelect;
 	CImage imgAttack;
+	CFont turnsize;
+	CFont colorsize;
+	CFont statussize;
+	CFont notationsize;
+	CString notationString;
+	CStatic* turnLable;
+	CStatic* colorLable;
+	CStatic* statusLable;
+	CStatic* notationLable;
 	Board mboard;
 	PlayerColor pColor;
 	unique_ptr<Piece>* board;
@@ -45,4 +54,5 @@ protected:
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
+	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 };

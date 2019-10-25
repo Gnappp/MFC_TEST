@@ -34,6 +34,7 @@ BEGIN_MESSAGE_MAP(CmfctestDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_LBUTTONDOWN()
+	ON_WM_CTLCOLOR()
 END_MESSAGE_MAP()
 
 
@@ -55,7 +56,7 @@ BOOL CmfctestDlg::OnInitDialog()
 	imgSelect.Load(L"Pieces\\Select_Green.png");
 	imgAttack.Load(L"Pieces\\Attack_Red.png");
 
-	SetWindowPos(NULL, 0, 0, imgBoard.GetWidth() + 50, imgBoard.GetHeight() + 50, SWP_NOZORDER);
+	SetWindowPos(NULL, 0, 0, imgBoard.GetWidth() + 400, imgBoard.GetHeight() + 50, SWP_NOZORDER);
 
 	board = MakeBoard();
 	for (int i = 1; i < 65; i++)
@@ -69,6 +70,17 @@ BOOL CmfctestDlg::OnInitDialog()
 			ptr->imgsrc.Load(fileName);
 		}
 	}
+	turnsize.CreatePointFont(180,L"굴림");
+	turnLable = new CStatic;
+	turnLable->Create(_T("Turn"), WS_CHILD | WS_VISIBLE | SS_LEFT,	CRect(650, 10, 800, 40), this);
+	turnLable->SetFont(&turnsize, TRUE);
+
+	colorsize.CreatePointFont(240, L"굴림");
+	
+	colorLable = new CStatic;
+	colorLable->Create(_T("Black"), WS_CHILD | WS_VISIBLE | SS_LEFT, CRect(750, 50, 1000, 90), this);
+	colorLable->SetFont(&colorsize, TRUE);
+
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -98,7 +110,6 @@ void CmfctestDlg::OnPaint()
 	else
 	{
 		//CDialogEx::OnPaint();
-		cout << "그림그림" << endl;
 		CPaintDC dc(this);
 		imgBoard.Draw(dc, 0, 0);
 		for (int i = 1; i < 65; i++)
@@ -123,6 +134,8 @@ HCURSOR CmfctestDlg::OnQueryDragIcon()
 
 unique_ptr<Piece>* CmfctestDlg::MakeBoard()
 {
+	/*
+	//일반
 	unique_ptr<Piece>* board = new unique_ptr < Piece>[65];
 	board[1] = std::make_unique<Rook>(PlayerColor::White, 1);
 	board[2] = std::make_unique<Knight>(PlayerColor::White, 2);
@@ -157,8 +170,20 @@ unique_ptr<Piece>* CmfctestDlg::MakeBoard()
 	board[54] = std::make_unique<Pawn>(PlayerColor::Black, 54);
 	board[55] = std::make_unique<Pawn>(PlayerColor::Black, 55);
 	board[56] = std::make_unique<Pawn>(PlayerColor::Black, 56);
+	*/
+
+	//캐슬링
+	unique_ptr<Piece>* board = new unique_ptr<Piece>[65];
+	board[1] = std::make_unique<Rook>(PlayerColor::White, 1);
+	board[5] = std::make_unique<King>(PlayerColor::White, 5);
+	board[8] = std::make_unique<Rook>(PlayerColor::White, 8);
+
+	board[57] = std::make_unique<Rook>(PlayerColor::Black, 57);
+	board[61] = std::make_unique<King>(PlayerColor::Black, 61);
+	board[64] = std::make_unique<Rook>(PlayerColor::Black, 64);
 
 	return board;
+
 }
 
 int CmfctestDlg::BoardToXCoordinate(int boardPos)
@@ -270,12 +295,43 @@ void CmfctestDlg::OnLButtonDown(UINT nFlags, CPoint point)
 		if (ch_num == 99)
 		{
 			this->InvalidateRect(NULL, TRUE);
-			cout << ptr1 << "   " << ptr << endl;
-			if (board[ptr1] == nullptr)
-				cout << "NO!" << endl;
+
+			colorsize.DeleteObject();
+			colorsize.CreatePointFont(240, L"굴림");
+			//상황별 처리 표시
+			if (!mboard.Get_check())
+				mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Black") : colorLable->SetWindowTextW(L"White");
+			else if (mboard.Get_check())
+				mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Check! Black") : colorLable->SetWindowTextW(L"Check! White");
+			else if (mboard.Get_checkmate())
+				mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Checkmate! White WIN") : colorLable->SetWindowTextW(L"Checkmate! Black WIN");
+			else if (mboard.Get_stalemate())
+				colorLable->SetWindowTextW(L"DRAW");
+
+			OnCtlColor(&dc1, colorLable, 6);
+			colorLable->SetFont(&colorsize);
+
+			
 		}
 		
 	}
 
 	CDialogEx::OnLButtonDown(nFlags, point);
+}
+
+
+HBRUSH CmfctestDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
+{
+	HBRUSH hbr = CDialogEx::OnCtlColor(pDC, pWnd, nCtlColor);
+	
+	// TODO:  여기서 DC의 특성을 변경합니다.
+	if (colorLable == pWnd)
+	{
+		if (mboard.Get_turn() % 2 == 1)
+			pDC->SetTextColor(RGB(208, 211, 212));
+		else
+			pDC->SetTextColor(RGB(0, 0, 0));
+	}
+	// TODO:  기본값이 적당하지 않으면 다른 브러시를 반환합니다.
+	return hbr;
 }
