@@ -276,7 +276,7 @@ void CmfctestDlg::OnLButtonDown(UINT nFlags, CPoint point)
 		movable=mboard.PieceSelect(board,CoordinateToBoard(x, y));
 		if (movable[0] != 98)
 		{
-			imgSelect.AlphaBlend(dc1, x + 3, y + 3, 100);
+			imgSelect.AlphaBlend(dc1, x , y , 100);
 			for (int i = 0; i < movable.size(); i++)
 			{
 				imgAttack.AlphaBlend(dc1, BoardToXCoordinate(movable[i]) + 3, BoardToYCoordinate(movable[i]) + 3, 100);
@@ -291,29 +291,33 @@ void CmfctestDlg::OnLButtonDown(UINT nFlags, CPoint point)
 		int ch_num;
 		int ptr = CoordinateToBoard(x, y);
 		int ptr1 = CoordinateToBoard(selectX, selectY);
-		ch_num=mboard.PieceMove(board, CoordinateToBoard(x, y));
+		ch_num = mboard.PieceMove(board, CoordinateToBoard(x, y));
 		if (ch_num == 99)
 		{
-			this->InvalidateRect(NULL, TRUE);
-
 			colorsize.DeleteObject();
 			colorsize.CreatePointFont(240, L"굴림");
 			//상황별 처리 표시
-			if (!mboard.Get_check())
-				mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Black") : colorLable->SetWindowTextW(L"White");
-			else if (mboard.Get_check())
+			
+
+			if (mboard.Get_check())
 				mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Check! Black") : colorLable->SetWindowTextW(L"Check! White");
+
 			else if (mboard.Get_checkmate())
 				mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Checkmate! White WIN") : colorLable->SetWindowTextW(L"Checkmate! Black WIN");
+
+
 			else if (mboard.Get_stalemate())
 				colorLable->SetWindowTextW(L"DRAW");
+
+			else if (!mboard.Get_check())
+				mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Black") : colorLable->SetWindowTextW(L"White");
 
 			OnCtlColor(&dc1, colorLable, 6);
 			colorLable->SetFont(&colorsize);
 
-			
+
 		}
-		
+		this->InvalidateRect(NULL, TRUE);
 	}
 
 	CDialogEx::OnLButtonDown(nFlags, point);

@@ -20,45 +20,7 @@ Board::Board()
 }
 
 
-unique_ptr<Piece>* Board::StartGame()
-{
-	unique_ptr<Piece>* board = new unique_ptr < Piece>[65];
-	board[1] = std::make_unique<Rook>(PlayerColor::White, 1);
-	board[2] = std::make_unique<Knight>(PlayerColor::White, 2);
-	board[3] = std::make_unique<Bishop>(PlayerColor::White, 3);
-	board[4] = std::make_unique<Queen>(PlayerColor::White, 4);
-	board[5] = std::make_unique<King>(PlayerColor::White, 5);
-	board[6] = std::make_unique<Bishop>(PlayerColor::White, 6);
-	board[7] = std::make_unique<Knight>(PlayerColor::White, 7);
-	board[8] = std::make_unique<Rook>(PlayerColor::White, 8);
-	board[9] = std::make_unique<Pawn>(PlayerColor::White, 9);
-	board[10] = std::make_unique<Pawn>(PlayerColor::White, 10);
-	board[11] = std::make_unique<Pawn>(PlayerColor::White, 11);
-	board[12] = std::make_unique<Pawn>(PlayerColor::White, 12);
-	board[13] = std::make_unique<Pawn>(PlayerColor::White, 13);
-	board[14] = std::make_unique<Pawn>(PlayerColor::White, 14);
-	board[15] = std::make_unique<Pawn>(PlayerColor::White, 15);
-	board[16] = std::make_unique<Pawn>(PlayerColor::White, 16);
 
-	board[57] = std::make_unique<Rook>(PlayerColor::Black, 57);
-	board[58] = std::make_unique<Knight>(PlayerColor::Black, 58);
-	board[59] = std::make_unique<Bishop>(PlayerColor::Black, 59);
-	board[60] = std::make_unique<Queen>(PlayerColor::Black, 60);
-	board[61] = std::make_unique<King>(PlayerColor::Black, 61);
-	board[62] = std::make_unique<Bishop>(PlayerColor::Black, 62);
-	board[63] = std::make_unique<Knight>(PlayerColor::Black, 63);
-	board[64] = std::make_unique<Rook>(PlayerColor::Black, 64);
-	board[49] = std::make_unique<Pawn>(PlayerColor::Black, 49);
-	board[50] = std::make_unique<Pawn>(PlayerColor::Black, 50);
-	board[51] = std::make_unique<Pawn>(PlayerColor::Black, 51);
-	board[52] = std::make_unique<Pawn>(PlayerColor::Black, 52);
-	board[53] = std::make_unique<Pawn>(PlayerColor::Black, 53);
-	board[54] = std::make_unique<Pawn>(PlayerColor::Black, 54);
-	board[55] = std::make_unique<Pawn>(PlayerColor::Black, 55);
-	board[56] = std::make_unique<Pawn>(PlayerColor::Black, 56);
-
-	return board;
-}
 
 
 Piece* Board::Get_Piece(unique_ptr<Piece> board[],int pos)
@@ -197,16 +159,70 @@ vector<int> Board::PieceSelect(unique_ptr<Piece> board[], int selPos)
 				}
 			}
 			else
+			{
+				vector<int> v_ptr;
+				bool br;
 				movablePlace = board[selectPieceIntPos]->CanMovePlace(board);
+				cout << turn % 2 << "   " << (turn + 1) % 2 << endl;
+				cout << movablePlace.size() << "  ";
+				for (int i = 0; i < movablePlace.size(); i++)
+				{
+					unique_ptr<Piece> piece_ptr;
+					piece_ptr = move(board[movablePlace[i]]);
+					board[movablePlace[i]] = move(board[selectPieceIntPos]);
+					board[movablePlace[i]]->Set_piecePosition(movablePlace[i]);
+					for (int a = 1; a < 65; a++)
+					{
+						br = false;
+						if (board[a] != nullptr)
+						{
+							if (board[a]->get_PlayerColor() == PlayerColor((turn+1) % 2))
+							{
+								if (Check_Check(board, a, PlayerColor((turn + 1) % 2)) != 0)
+								{
+									cout << " !!break!! ";
+									br = true;
+									break;
+								}
+							}
+						}
+					}
+					if (!br)
+						v_ptr.push_back(movablePlace[i]);
+					board[selectPieceIntPos] = move(board[movablePlace[i]]);
+					board[selectPieceIntPos]->Set_piecePosition(selectPieceIntPos);
+					board[movablePlace[i]] = move(piece_ptr);
+				}
+
+				cout << v_ptr.size() << endl;
+				cout << movablePlace.size() << endl;
+				movablePlace = v_ptr;
+			}
 			
 
 			if (check)
 			{
-				if (board[selectPieceIntPos]->get_PieceType() == PieceType::KING) //왕 움직임
-					movablePlace = KingMovable(board, board[selectPieceIntPos]->CanMovePlace(board), selectPieceIntPos, PlayerColor(turn % 2));
+				if (board[selectPieceIntPos]->get_PieceType() == PieceType::KING)
+				{
+					vector<int> king_ptr = board[selectPieceIntPos]->CanMovePlace(board);
+					movablePlace = KingMovable(board, king_ptr, selectPieceIntPos, PlayerColor(turn % 2));
+
+					//캐슬링
+					if (KingSideCastling(board, selectPieceIntPos, PlayerColor(turn % 2)))
+					{
+						movablePlace.push_back(selectPieceIntPos + 2);
+						kingSideCastling = selectPieceIntPos + 2;
+					}
+					if (QueenSideCastling(board, selectPieceIntPos, PlayerColor(turn % 2)))
+					{
+						movablePlace.push_back(selectPieceIntPos - 2);
+						queenSideCastling = selectPieceIntPos - 2;
+					}
+				}
 				else
 				{
 					vector<int> move_ptr;
+					move_ptr.push_back(99);
 					for (int c = 0; c < checkMovable.size(); c++)
 					{
 						for (int m = 0; m < movablePlace.size(); m++)
@@ -217,6 +233,7 @@ vector<int> Board::PieceSelect(unique_ptr<Piece> board[], int selPos)
 					}
 					movablePlace = move_ptr;
 				}
+
 			}
 		}
 	}
@@ -324,6 +341,7 @@ int Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 				checkPos = selectMoveIntPos;
 			}
 
+			//스테일메이트
 			if (StalemateCheck(board, PlayerColor(turn % 2)))
 			{
 				check = false;
@@ -345,7 +363,7 @@ int Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 				checkMovable.push_back(checkPos);
 				vector<int> move_ptr;
 				move_ptr = board[checkPos]->CanMovePlace(board);
-				for (int m = 0; m < move_ptr.size(); m++) //체크인 말이 움직이는곳이 체크인곳만 넣기.
+				for (int m = 0; m < move_ptr.size(); m++) //체크인 말의 움직이는 곳이 체크가 되는곳 찾기
 				{
 					unique_ptr<Piece> piece_ptr = move(board[move_ptr[m]]);
 					board[move_ptr[m]] = move(board[checkPos]);
@@ -532,27 +550,46 @@ bool Board::KingSideCastling(unique_ptr<Piece> board[],int kingPos,PlayerColor n
 	int rookPos = kingPos+3;
 	if (!board[kingPos]->Get_doMove())
 	{
-		vector<int> dengerousPlace = FindDengerousPlace(board, nowPlayer);
-		if (board[rookPos] != nullptr)
+		if (board[rookPos] != nullptr )
 		{
-			if (board[rookPos]->get_PieceType() == PieceType::ROOK)
+			if (board[rookPos]->get_PlayerColor() == turn % 2)
 			{
-				if (!board[rookPos]->Get_doMove() && !board[kingPos]->Get_doMove())
+				if (board[rookPos]->get_PieceType() == PieceType::ROOK)
 				{
-					for (int i = kingPos + 1; i < rookPos; i++)
+					if (!board[rookPos]->Get_doMove() && !board[kingPos]->Get_doMove())
 					{
-						if (board[i] != nullptr)
-							return false;
-					}
-					for (int i = 0; i < dengerousPlace.size(); i++)
-					{
-						if (dengerousPlace[i] == kingPos + 2)
-							return false;
+						for (int i = kingPos + 1; i < rookPos; i++)
+						{
+							if (board[i] != nullptr)
+								return false;
+						}
+
+						unique_ptr<Piece> piece_ptr_king;
+						unique_ptr<Piece> piece_ptr_rook;
+						piece_ptr_king = move(board[kingPos + 2]);
+						piece_ptr_rook = move(board[kingPos + 1]);
+						board[kingPos + 2] = move(board[kingPos]);
+						board[kingPos + 2]->Set_piecePosition(kingPos + 2);
+						board[kingPos + 1] = move(board[rookPos]);
+						board[kingPos + 1]->Set_piecePosition(kingPos + 1);
+						vector<int> dengerousPlace = FindDengerousPlace(board, nowPlayer);
+						board[kingPos] = move(board[kingPos + 2]);
+						board[kingPos]->Set_piecePosition(kingPos);
+						board[kingPos + 2] = move(piece_ptr_king);
+						board[rookPos] = move(board[kingPos + 1]);
+						board[rookPos]->Set_piecePosition(rookPos);
+						board[kingPos + 1] = move(piece_ptr_rook);
+
+						for (int i = 0; i < dengerousPlace.size(); i++)
+						{
+							if (dengerousPlace[i] == kingPos + 2)
+								return false;
+						}
+						return true;
 					}
 				}
 			}
 		}
-		return true;
 	}
 	return false;
 }
@@ -563,26 +600,43 @@ bool Board::QueenSideCastling(unique_ptr<Piece> board[], int kingPos, PlayerColo
 	int rookPos = kingPos - 4;
 	if (!board[kingPos]->Get_doMove())
 	{
-		vector<int> dengerousPlace = FindDengerousPlace(board, nowPlayer);
 		if (board[rookPos] != nullptr)
 		{
-			if (board[rookPos]->get_PieceType() == PieceType::ROOK)
+			if (board[rookPos]->get_PlayerColor() == turn % 2)
 			{
-				if (!board[rookPos]->Get_doMove() && !board[kingPos]->Get_doMove())
+				if (board[rookPos]->get_PieceType() == PieceType::ROOK)
 				{
-					for (int i = kingPos - 1; i > rookPos; i--)
+					if (!board[rookPos]->Get_doMove() && !board[kingPos]->Get_doMove())
 					{
-						if (board[i] != nullptr)
-							return false;
-					}
-					for (int i = 0; i < dengerousPlace.size(); i++)
-					{
-						if (dengerousPlace[i] == kingPos + 2)
-							return false;
+						for (int i = kingPos - 1; i > rookPos; i--)
+						{
+							if (board[i] != nullptr)
+								return false;
+						}
+						unique_ptr<Piece> piece_ptr_king;
+						unique_ptr<Piece> piece_ptr_rook;
+						piece_ptr_king = move(board[kingPos - 2]);
+						piece_ptr_rook = move(board[kingPos - 1]);
+						board[kingPos - 2] = move(board[kingPos]);
+						board[kingPos - 2]->Set_piecePosition(kingPos - 2);
+						board[kingPos - 1] = move(board[rookPos]);
+						board[kingPos - 1]->Set_piecePosition(kingPos - 1);
+						vector<int> dengerousPlace = FindDengerousPlace(board, nowPlayer);
+						board[kingPos] = move(board[kingPos - 2]);
+						board[kingPos]->Set_piecePosition(kingPos);
+						board[kingPos - 2] = move(piece_ptr_king);
+						board[rookPos] = move(board[kingPos - 1]);
+						board[rookPos]->Set_piecePosition(rookPos);
+						board[kingPos - 1] = move(piece_ptr_rook);
+						for (int i = 0; i < dengerousPlace.size(); i++)
+						{
+							if (dengerousPlace[i] == kingPos - 2)
+								return false;
+						}
+						return true;
 					}
 				}
 			}
-			return true;
 		}
 	}
 	return false;

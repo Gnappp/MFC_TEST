@@ -49,7 +49,6 @@ public:
 	Board();
 	//Board(unique_ptr<Piece> board[]);
 	void MakeBoard(unique_ptr<Piece> board[]);
-	unique_ptr<Piece>* StartGame();
 	Piece* Get_Piece(unique_ptr<Piece> board[],int pos);
 	char PieceTypeChar(Piece* piece);
 	int ChangePositionStringToInt(string pos);
