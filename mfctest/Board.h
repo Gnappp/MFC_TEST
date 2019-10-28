@@ -43,12 +43,14 @@ protected:
 	int checkPos;
 	bool selected;
 	int selectMoveIntPos;
-	unique_ptr<Piece>* take_a_back_board;
+	unique_ptr<Piece>* mboard;
 
 public:
 	Board();
+	
 	//Board(unique_ptr<Piece> board[]);
-	void MakeBoard(unique_ptr<Piece> board[]);
+	unique_ptr<Piece>* MakeBoard();
+	unique_ptr<Piece>* Get_board();
 	Piece* Get_Piece(unique_ptr<Piece> board[],int pos);
 	char PieceTypeChar(Piece* piece);
 	int ChangePositionStringToInt(string pos);

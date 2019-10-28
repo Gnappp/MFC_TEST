@@ -58,13 +58,13 @@ BOOL CmfctestDlg::OnInitDialog()
 
 	SetWindowPos(NULL, 0, 0, imgBoard.GetWidth() + 400, imgBoard.GetHeight() + 50, SWP_NOZORDER);
 
-	board = MakeBoard();
+
 	for (int i = 1; i < 65; i++)
 	{
-		Piece* ptr = board[i].get();
+		Piece* ptr = mboard.Get_Piece(mboard.Get_board(),i);
+		
 		if (ptr != nullptr)
 		{
-			
 			CString fileName;
 			fileName.Format(L"Pieces\\%s_%s.png", ColorToString(ptr->get_PlayerColor()), PieceToString(ptr->get_PieceType()));
 			ptr->imgsrc.Load(fileName);
@@ -114,7 +114,7 @@ void CmfctestDlg::OnPaint()
 		imgBoard.Draw(dc, 0, 0);
 		for (int i = 1; i < 65; i++)
 		{
-			Piece* ptr = board[i].get();
+			Piece* ptr = mboard.Get_Piece(mboard.Get_board(),i);
 			if (ptr != nullptr)
 			{
 				ptr->imgsrc.Draw(dc, BoardToXCoordinate(i), BoardToYCoordinate(i));
@@ -132,59 +132,7 @@ HCURSOR CmfctestDlg::OnQueryDragIcon()
 
 
 
-unique_ptr<Piece>* CmfctestDlg::MakeBoard()
-{
-	/*
-	//일반
-	unique_ptr<Piece>* board = new unique_ptr < Piece>[65];
-	board[1] = std::make_unique<Rook>(PlayerColor::White, 1);
-	board[2] = std::make_unique<Knight>(PlayerColor::White, 2);
-	board[3] = std::make_unique<Bishop>(PlayerColor::White, 3);
-	board[4] = std::make_unique<Queen>(PlayerColor::White, 4);
-	board[5] = std::make_unique<King>(PlayerColor::White, 5);
-	board[6] = std::make_unique<Bishop>(PlayerColor::White, 6);
-	board[7] = std::make_unique<Knight>(PlayerColor::White, 7);
-	board[8] = std::make_unique<Rook>(PlayerColor::White, 8);
-	board[9] = std::make_unique<Pawn>(PlayerColor::White, 9);
-	board[10] = std::make_unique<Pawn>(PlayerColor::White, 10);
-	board[11] = std::make_unique<Pawn>(PlayerColor::White, 11);
-	board[12] = std::make_unique<Pawn>(PlayerColor::White, 12);
-	board[13] = std::make_unique<Pawn>(PlayerColor::White, 13);
-	board[14] = std::make_unique<Pawn>(PlayerColor::White, 14);
-	board[15] = std::make_unique<Pawn>(PlayerColor::White, 15);
-	board[16] = std::make_unique<Pawn>(PlayerColor::White, 16);
 
-	board[57] = std::make_unique<Rook>(PlayerColor::Black, 57);
-	board[58] = std::make_unique<Knight>(PlayerColor::Black, 58);
-	board[59] = std::make_unique<Bishop>(PlayerColor::Black, 59);
-	board[60] = std::make_unique<Queen>(PlayerColor::Black, 60);
-	board[61] = std::make_unique<King>(PlayerColor::Black, 61);
-	board[62] = std::make_unique<Bishop>(PlayerColor::Black, 62);
-	board[63] = std::make_unique<Knight>(PlayerColor::Black, 63);
-	board[64] = std::make_unique<Rook>(PlayerColor::Black, 64);
-	board[49] = std::make_unique<Pawn>(PlayerColor::Black, 49);
-	board[50] = std::make_unique<Pawn>(PlayerColor::Black, 50);
-	board[51] = std::make_unique<Pawn>(PlayerColor::Black, 51);
-	board[52] = std::make_unique<Pawn>(PlayerColor::Black, 52);
-	board[53] = std::make_unique<Pawn>(PlayerColor::Black, 53);
-	board[54] = std::make_unique<Pawn>(PlayerColor::Black, 54);
-	board[55] = std::make_unique<Pawn>(PlayerColor::Black, 55);
-	board[56] = std::make_unique<Pawn>(PlayerColor::Black, 56);
-	*/
-
-	//캐슬링
-	unique_ptr<Piece>* board = new unique_ptr<Piece>[65];
-	board[1] = std::make_unique<Rook>(PlayerColor::White, 1);
-	board[5] = std::make_unique<King>(PlayerColor::White, 5);
-	board[8] = std::make_unique<Rook>(PlayerColor::White, 8);
-
-	board[57] = std::make_unique<Rook>(PlayerColor::Black, 57);
-	board[61] = std::make_unique<King>(PlayerColor::Black, 61);
-	board[64] = std::make_unique<Rook>(PlayerColor::Black, 64);
-
-	return board;
-
-}
 
 int CmfctestDlg::BoardToXCoordinate(int boardPos)
 {
@@ -273,7 +221,7 @@ void CmfctestDlg::OnLButtonDown(UINT nFlags, CPoint point)
 
 	if (!mboard.Get_Selected())
 	{
-		movable=mboard.PieceSelect(board,CoordinateToBoard(x, y));
+		movable=mboard.PieceSelect(mboard.Get_board(),CoordinateToBoard(x, y));
 		if (movable[0] != 98)
 		{
 			imgSelect.AlphaBlend(dc1, x , y , 100);
@@ -291,7 +239,7 @@ void CmfctestDlg::OnLButtonDown(UINT nFlags, CPoint point)
 		int ch_num;
 		int ptr = CoordinateToBoard(x, y);
 		int ptr1 = CoordinateToBoard(selectX, selectY);
-		ch_num = mboard.PieceMove(board, CoordinateToBoard(x, y));
+		ch_num = mboard.PieceMove(mboard.Get_board(), CoordinateToBoard(x, y));
 		if (ch_num == 99)
 		{
 			colorsize.DeleteObject();
@@ -305,7 +253,6 @@ void CmfctestDlg::OnLButtonDown(UINT nFlags, CPoint point)
 			else if (mboard.Get_checkmate())
 				mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Checkmate! White WIN") : colorLable->SetWindowTextW(L"Checkmate! Black WIN");
 
-
 			else if (mboard.Get_stalemate())
 				colorLable->SetWindowTextW(L"DRAW");
 
@@ -315,7 +262,7 @@ void CmfctestDlg::OnLButtonDown(UINT nFlags, CPoint point)
 			OnCtlColor(&dc1, colorLable, 6);
 			colorLable->SetFont(&colorsize);
 
-
+			
 		}
 		this->InvalidateRect(NULL, TRUE);
 	}

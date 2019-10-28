@@ -13,15 +13,90 @@ Board::Board()
 	, queenSideCastling(0)
 	, selectPieceIntPos(0)
 	, checkPos(0)
-	, take_a_back_board(nullptr)
+	, mboard(nullptr)
 	, selected(false)
 
 {
+	mboard = MakeBoard();
 }
 
 
+unique_ptr<Piece>* Board::MakeBoard()
+{
+	/*
+	//일반
+	unique_ptr<Piece>* mboard = new unique_ptr < Piece>[65];
+	mboard[1] = std::make_unique<Rook>(PlayerColor::White, 1);
+	mboard[2] = std::make_unique<Knight>(PlayerColor::White, 2);
+	mboard[3] = std::make_unique<Bishop>(PlayerColor::White, 3);
+	mboard[4] = std::make_unique<Queen>(PlayerColor::White, 4);
+	mboard[5] = std::make_unique<King>(PlayerColor::White, 5);
+	mboard[6] = std::make_unique<Bishop>(PlayerColor::White, 6);
+	mboard[7] = std::make_unique<Knight>(PlayerColor::White, 7);
+	mboard[8] = std::make_unique<Rook>(PlayerColor::White, 8);
+	mboard[9] = std::make_unique<Pawn>(PlayerColor::White, 9);
+	mboard[10] = std::make_unique<Pawn>(PlayerColor::White, 10);
+	mboard[11] = std::make_unique<Pawn>(PlayerColor::White, 11);
+	mboard[12] = std::make_unique<Pawn>(PlayerColor::White, 12);
+	mboard[13] = std::make_unique<Pawn>(PlayerColor::White, 13);
+	mboard[14] = std::make_unique<Pawn>(PlayerColor::White, 14);
+	mboard[15] = std::make_unique<Pawn>(PlayerColor::White, 15);
+	mboard[16] = std::make_unique<Pawn>(PlayerColor::White, 16);
 
+	mboard[57] = std::make_unique<Rook>(PlayerColor::Black, 57);
+	mboard[58] = std::make_unique<Knight>(PlayerColor::Black, 58);
+	mboard[59] = std::make_unique<Bishop>(PlayerColor::Black, 59);
+	mboard[60] = std::make_unique<Queen>(PlayerColor::Black, 60);
+	mboard[61] = std::make_unique<King>(PlayerColor::Black, 61);
+	mboard[62] = std::make_unique<Bishop>(PlayerColor::Black, 62);
+	mboard[63] = std::make_unique<Knight>(PlayerColor::Black, 63);
+	mboard[64] = std::make_unique<Rook>(PlayerColor::Black, 64);
+	mboard[49] = std::make_unique<Pawn>(PlayerColor::Black, 49);
+	mboard[50] = std::make_unique<Pawn>(PlayerColor::Black, 50);
+	mboard[51] = std::make_unique<Pawn>(PlayerColor::Black, 51);
+	mboard[52] = std::make_unique<Pawn>(PlayerColor::Black, 52);
+	mboard[53] = std::make_unique<Pawn>(PlayerColor::Black, 53);
+	mboard[54] = std::make_unique<Pawn>(PlayerColor::Black, 54);
+	mboard[55] = std::make_unique<Pawn>(PlayerColor::Black, 55);
+	mboard[56] = std::make_unique<Pawn>(PlayerColor::Black, 56);
+	*/
 
+	/*
+	//캐슬링
+	unique_ptr<Piece>* mboard = new unique_ptr<Piece>[65];
+	mboard[1] = std::make_unique<Rook>(PlayerColor::White, 1);
+	mboard[5] = std::make_unique<King>(PlayerColor::White, 5);
+	mboard[8] = std::make_unique<Rook>(PlayerColor::White, 8);
+
+	mboard[57] = std::make_unique<Rook>(PlayerColor::Black, 57);
+	mboard[61] = std::make_unique<King>(PlayerColor::Black, 61);
+	mboard[64] = std::make_unique<Rook>(PlayerColor::Black, 64);
+	*/
+	/*
+	//스테일메이트
+	unique_ptr<Piece>* board = new unique_ptr<Piece>[65];
+	board[8] = std::make_unique<King>(PlayerColor::White, 8);
+
+	board[9] = std::make_unique<Rook>(PlayerColor::Black, 9);
+	board[61] = std::make_unique<King>(PlayerColor::Black, 61);
+	board[62] = std::make_unique<Rook>(PlayerColor::Black, 62);
+*/
+
+	unique_ptr<Piece>* board = new unique_ptr<Piece>[65];
+	board[8] = std::make_unique<King>(PlayerColor::White, 8);
+
+	board[9] = std::make_unique<Pawn>(PlayerColor::Black, 9);
+	board[9]->Set_doMove(true);
+	board[61] = std::make_unique<King>(PlayerColor::Black, 61);
+	board[62] = std::make_unique<Rook>(PlayerColor::Black, 62);
+	return board;
+	
+}
+
+unique_ptr<Piece>* Board::Get_board()
+{
+	return mboard;
+}
 
 Piece* Board::Get_Piece(unique_ptr<Piece> board[],int pos)
 {
@@ -163,8 +238,6 @@ vector<int> Board::PieceSelect(unique_ptr<Piece> board[], int selPos)
 				vector<int> v_ptr;
 				bool br;
 				movablePlace = board[selectPieceIntPos]->CanMovePlace(board);
-				cout << turn % 2 << "   " << (turn + 1) % 2 << endl;
-				cout << movablePlace.size() << "  ";
 				for (int i = 0; i < movablePlace.size(); i++)
 				{
 					unique_ptr<Piece> piece_ptr;
@@ -180,7 +253,6 @@ vector<int> Board::PieceSelect(unique_ptr<Piece> board[], int selPos)
 							{
 								if (Check_Check(board, a, PlayerColor((turn + 1) % 2)) != 0)
 								{
-									cout << " !!break!! ";
 									br = true;
 									break;
 								}
@@ -194,8 +266,6 @@ vector<int> Board::PieceSelect(unique_ptr<Piece> board[], int selPos)
 					board[movablePlace[i]] = move(piece_ptr);
 				}
 
-				cout << v_ptr.size() << endl;
-				cout << movablePlace.size() << endl;
 				movablePlace = v_ptr;
 			}
 			
@@ -355,6 +425,7 @@ int Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 				selectMoveIntPos = 0;
 				movablePlace.clear();
 				turn++;
+				return 99;
 			}
 
 			if (check) // 체크메이트 확인
@@ -527,13 +598,12 @@ bool Board::StalemateCheck(unique_ptr<Piece> board[], PlayerColor nowPlayer)
 	{
 		if (board[i] != nullptr)
 		{
-			if (board[i]->get_PlayerColor() == nowPlayer)
+			if (board[i]->get_PlayerColor() != nowPlayer)
 			{
-				if (board[i]->get_PieceType() == PieceType::KING)
-					movable = KingMovable(board, board[i]->CanMovePlace(board), i, nowPlayer);
-				else
-					movable = board[i]->CanMovePlace(board);
-
+				if (board[i]->get_PieceType() == PieceType::KING) {
+					movable = KingMovable(board, board[i]->CanMovePlace(board), i, board[i]->get_PlayerColor());
+				}
+				
 				if (movable.size() != 0)
 					return false;
 
@@ -647,12 +717,11 @@ void Board::Promotion(unique_ptr<Piece> board[],int pos)
 	int promotionNo;
 	bool selectcheck=true;
 
+	CString fileName;
 	while (selectcheck)
 	{
-		system("cls");
-		//Draw_Board();
 		cout << "Promotion" << endl;
-		cout << "1. Rook   2. Knghit   3. Bishop   4. Queen" << endl;
+		cout << "1. Rook   2. Knighit   3. Bishop   4. Queen" << endl;
 		cout << "Select piece number : ";
 		cin >> promotionNo;
 
@@ -661,18 +730,26 @@ void Board::Promotion(unique_ptr<Piece> board[],int pos)
 		case 1:
 			board[pos] = make_unique<Rook>(board[pos]->get_PlayerColor(), board[pos]->Get_piecePosition());
 			selectcheck = false;
+			fileName.Format(L"Pieces\\%s_%s.png", turn%2==0?L"Black":L"White", L"ROOK");
+			board[pos]->imgsrc.Load(fileName);
 			break;
 		case 2:
 			board[pos] = make_unique<Knight>(board[pos]->get_PlayerColor(), board[pos]->Get_piecePosition());
 			selectcheck = false;
+			fileName.Format(L"Pieces\\%s_%s.png", turn % 2 == 0 ? L"Black" : L"White", L"KNIGHT");
+			board[pos]->imgsrc.Load(fileName);
 			break;
 		case 3:
 			board[pos] = make_unique<Bishop>(board[pos]->get_PlayerColor(), board[pos]->Get_piecePosition());
 			selectcheck = false;
+			fileName.Format(L"Pieces\\%s_%s.png", turn % 2 == 0 ? L"Black" : L"White", L"BISHOP");
+			board[pos]->imgsrc.Load(fileName);
 			break;
 		case 4:
 			board[pos] = make_unique<Queen>(board[pos]->get_PlayerColor(), board[pos]->Get_piecePosition());
 			selectcheck = false;
+			fileName.Format(L"Pieces\\%s_%s.png", turn % 2 == 0 ? L"Black" : L"White", L"QUEEN");
+			board[pos]->imgsrc.Load(fileName);
 			break;
 		default:
 			selectcheck = false;

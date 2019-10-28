@@ -11,6 +11,7 @@ class CmfctestDlg : public CDialogEx
 public:
 	CmfctestDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
 
+	
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
 	enum { IDD = IDD_MFCTEST_DIALOG };
@@ -44,8 +45,6 @@ protected:
 	CStatic* notationLable;
 	Board mboard;
 	PlayerColor pColor;
-	unique_ptr<Piece>* board;
-	unique_ptr<Piece>* MakeBoard();
 	int BoardToXCoordinate(int boardPos);
 	int BoardToYCoordinate(int boardPos);
 	int CoordinateToBoard(int x, int y);
