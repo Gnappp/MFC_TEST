@@ -190,6 +190,7 @@
     <ClInclude Include="An_passnt.h" />
     <ClInclude Include="Bishop.h" />
     <ClInclude Include="Board.h" />
+    <ClInclude Include="CPromotionDlg.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="King.h" />
     <ClInclude Include="Knight.h" />
@@ -206,6 +207,7 @@
     <ClCompile Include="An_passnt.cpp" />
     <ClCompile Include="Bishop.cpp" />
     <ClCompile Include="Board.cpp" />
+    <ClCompile Include="CPromotionDlg.cpp" />
     <ClCompile Include="King.cpp" />
     <ClCompile Include="Knight.cpp" />
     <ClCompile Include="mfctest.cpp" />

@@ -8,6 +8,8 @@
 #include "mfctestDlg.h"
 #include "afxdialogex.h"
 #include <atlImage.h>
+#include"CPromotionDlg.h"
+
 #pragma comment(linker, "/entry:WinMainCRTStartup /subsystem:console")
 #ifdef _DEBUG
 #define new DEBUG_NEW
@@ -81,6 +83,8 @@ BOOL CmfctestDlg::OnInitDialog()
 	colorLable->Create(_T("Black"), WS_CHILD | WS_VISIBLE | SS_LEFT, CRect(750, 50, 1000, 90), this);
 	colorLable->SetFont(&colorsize, TRUE);
 
+	//replay_Btn.Create(_T("REPLAY"), WS_CHILD | WS_VISIBLE | SS_LEFT, CRect(850, 500, 1000, 600), this, 2501);
+	surrender_Btn.Create(_T("SURRENDER"), WS_CHILD | WS_VISIBLE | SS_LEFT, CRect(660, 500, 1000, 600), this, 2502);
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -266,7 +270,44 @@ void CmfctestDlg::OnLButtonDown(UINT nFlags, CPoint point)
 		}
 		this->InvalidateRect(NULL, TRUE);
 	}
+	if (mboard.Get_promotion())
+	{
+		int i;
+		CPromotionDlg pDlg;
 
+
+		pDlg.ch = true;
+
+		if (IDOK == pDlg.DoModal())
+		{
+
+			i = pDlg.i;
+			mboard.Promotion(mboard.Get_board(), CoordinateToBoard(x, y), pDlg.i);
+		}
+		cout << mboard.Get_turn() << endl;
+		pDlg.DestroyWindow();
+
+		colorsize.DeleteObject();
+		colorsize.CreatePointFont(240, L"굴림");
+		//상황별 처리 표시
+
+		if (mboard.Get_check())
+			mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Check! Black") : colorLable->SetWindowTextW(L"Check! White");
+
+		else if (mboard.Get_checkmate())
+			mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Checkmate! White WIN") : colorLable->SetWindowTextW(L"Checkmate! Black WIN");
+
+		else if (mboard.Get_stalemate())
+			colorLable->SetWindowTextW(L"DRAW");
+
+		else if (!mboard.Get_check())
+			mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Black") : colorLable->SetWindowTextW(L"White");
+
+		colorLable->SetFont(&colorsize);
+		mboard.Set_promotion(false);
+		this->InvalidateRect(NULL, TRUE);
+	}
+	
 	CDialogEx::OnLButtonDown(nFlags, point);
 }
 
@@ -286,3 +327,18 @@ HBRUSH CmfctestDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 	// TODO:  기본값이 적당하지 않으면 다른 브러시를 반환합니다.
 	return hbr;
 }
+
+
+//BOOL CmfctestDlg::OnCommand(WPARAM wParam, LPARAM lParam)
+//{
+//	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+//
+//	cout << wParam << endl;
+//	if (wParam = 2501)
+//	{
+//		mboard.MakeBoard();
+//		this->InvalidateRect(NULL, TRUE);
+//	}
+//	
+//	return CDialogEx::OnCommand(wParam, lParam);
+//}

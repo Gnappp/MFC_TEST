@@ -89,6 +89,17 @@ FONT 9, "MS Shell Dlg", 0, 0, 0x1
 BEGIN
 END
 
+IDD_PromotionDlg DIALOGEX 0, 0, 311, 123
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    PUSHBUTTON      "Queen",IDC_QueenBtn,25,59,50,32
+    PUSHBUTTON      "Rook",IDC_RookBtn,94,60,50,31
+    PUSHBUTTON      "Bishop",IDC_BishopBtn,171,61,50,29
+    PUSHBUTTON      "Knight",IDC_KnightBtn,239,63,50,26
+END
+
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -143,6 +154,14 @@ BEGIN
         TOPMARGIN, 7
         BOTTOMMARGIN, 228
     END
+
+    IDD_PromotionDlg, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 304
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 116
+    END
 END
 #endif    // APSTUDIO_INVOKED
 
@@ -153,6 +172,11 @@ END
 //
 
 IDD_MFCTEST_DIALOG AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_PromotionDlg AFX_DIALOG_LAYOUT
 BEGIN
     0
 END

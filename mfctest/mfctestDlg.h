@@ -43,6 +43,8 @@ protected:
 	CStatic* colorLable;
 	CStatic* statusLable;
 	CStatic* notationLable;
+	CButton replay_Btn;
+	CButton surrender_Btn;
 	Board mboard;
 	PlayerColor pColor;
 	int BoardToXCoordinate(int boardPos);
@@ -54,4 +56,5 @@ protected:
 public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
+//	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
 };

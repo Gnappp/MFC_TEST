@@ -36,6 +36,7 @@ protected:
 	bool checkmate;
 	bool stalemate;
 	bool castling;
+	bool promotion;
 	int kingSideCastling;
 	int queenSideCastling;
 	int turn;
@@ -64,11 +65,13 @@ public:
 	bool StalemateCheck(unique_ptr<Piece> board[], PlayerColor nowPlayer);
 	bool KingSideCastling(unique_ptr<Piece> board[],int kingPos,PlayerColor nowPlayer);
 	bool QueenSideCastling(unique_ptr<Piece> board[], int kingPos, PlayerColor nowPlayer);
-	void Promotion(unique_ptr<Piece> board[],int pos);
+	void Promotion(unique_ptr<Piece> board[], int pos, int selNum);
 	bool Get_Selected();
 	int Get_turn();
 	bool Get_check();
 	bool Get_checkmate();
 	bool Get_stalemate();
+	bool Get_promotion();
+	void Set_promotion(bool pro);
 
 };
