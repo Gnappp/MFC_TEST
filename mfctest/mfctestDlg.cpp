@@ -60,31 +60,20 @@ BOOL CmfctestDlg::OnInitDialog()
 
 	SetWindowPos(NULL, 0, 0, imgBoard.GetWidth() + 400, imgBoard.GetHeight() + 50, SWP_NOZORDER);
 
-
-	for (int i = 1; i < 65; i++)
-	{
-		Piece* ptr = mboard.Get_Piece(mboard.Get_board(),i);
-		
-		if (ptr != nullptr)
-		{
-			CString fileName;
-			fileName.Format(L"Pieces\\%s_%s.png", ColorToString(ptr->get_PlayerColor()), PieceToString(ptr->get_PieceType()));
-			ptr->imgsrc.Load(fileName);
-		}
-	}
 	turnsize.CreatePointFont(180,L"굴림");
 	turnLable = new CStatic;
 	turnLable->Create(_T("Turn"), WS_CHILD | WS_VISIBLE | SS_LEFT,	CRect(650, 10, 800, 40), this);
 	turnLable->SetFont(&turnsize, TRUE);
 
 	colorsize.CreatePointFont(240, L"굴림");
-	
 	colorLable = new CStatic;
 	colorLable->Create(_T("Black"), WS_CHILD | WS_VISIBLE | SS_LEFT, CRect(750, 50, 1000, 90), this);
 	colorLable->SetFont(&colorsize, TRUE);
 
-	//replay_Btn.Create(_T("REPLAY"), WS_CHILD | WS_VISIBLE | SS_LEFT, CRect(850, 500, 1000, 600), this, 2501);
+	replay_Btn.Create(_T("RESTART"), WS_CHILD | WS_VISIBLE | SS_LEFT, CRect(650, 360, 1000, 460), this, 2501);
 	surrender_Btn.Create(_T("SURRENDER"), WS_CHILD | WS_VISIBLE | SS_LEFT, CRect(660, 500, 1000, 600), this, 2502);
+
+	endGame = false;
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
@@ -124,6 +113,7 @@ void CmfctestDlg::OnPaint()
 				ptr->imgsrc.Draw(dc, BoardToXCoordinate(i), BoardToYCoordinate(i));
 			}
 		}
+		cout << endl;
 	}
 }
 
@@ -133,10 +123,6 @@ HCURSOR CmfctestDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
-
-
-
-
 
 int CmfctestDlg::BoardToXCoordinate(int boardPos)
 {
@@ -222,92 +208,55 @@ void CmfctestDlg::OnLButtonDown(UINT nFlags, CPoint point)
 
 	x = x * 80;
 	y = y * 80;
-
-	if (!mboard.Get_Selected())
+	if (!endGame)
 	{
-		movable=mboard.PieceSelect(mboard.Get_board(),CoordinateToBoard(x, y));
-		if (movable[0] != 98)
+		if (!mboard.Get_Selected())
 		{
-			imgSelect.AlphaBlend(dc1, x , y , 100);
-			for (int i = 0; i < movable.size(); i++)
+			movable = mboard.PieceSelect(mboard.Get_board(), CoordinateToBoard(x, y));
+			if (movable[0] != 98)
 			{
-				imgAttack.AlphaBlend(dc1, BoardToXCoordinate(movable[i]) + 3, BoardToYCoordinate(movable[i]) + 3, 100);
+				imgSelect.AlphaBlend(dc1, x, y, 100);
+				for (int i = 0; i < movable.size(); i++)
+				{
+					imgAttack.AlphaBlend(dc1, BoardToXCoordinate(movable[i]) , BoardToYCoordinate(movable[i]) , 100);
+				}
+			}
+			selectX = x;
+			selectY = y;
+		}
+
+		else if (mboard.Get_Selected())
+		{
+			int ch_num;
+			int ptr = CoordinateToBoard(x, y);
+			int ptr1 = CoordinateToBoard(selectX, selectY);
+			ch_num = mboard.PieceMove(mboard.Get_board(), CoordinateToBoard(x, y));
+			int save_pos=ptr;
+
+			if (ch_num == 99)
+			{
+				//상황별 처리 표시
+				GameRule();
+				Label_Print();
+			}
+			else if (ch_num == 89 && mboard.Get_promotion())
+			{
+				int i;
+				CPromotionDlg pDlg;
+				pDlg.ch = true;
+				if (IDOK == pDlg.DoModal())
+				{
+					i = pDlg.i;
+					mboard.Promotion(mboard.Get_board(), save_pos, pDlg.i);
+				}
+				pDlg.DestroyWindow();
+				//상황별 처리 표시
+				GameRule();
+				Label_Print();
+				
 			}
 		}
-		selectX = x;
-		selectY = y;
 	}
-
-	else if (mboard.Get_Selected())
-	{
-		int ch_num;
-		int ptr = CoordinateToBoard(x, y);
-		int ptr1 = CoordinateToBoard(selectX, selectY);
-		ch_num = mboard.PieceMove(mboard.Get_board(), CoordinateToBoard(x, y));
-		if (ch_num == 99)
-		{
-			colorsize.DeleteObject();
-			colorsize.CreatePointFont(240, L"굴림");
-			//상황별 처리 표시
-			
-
-			if (mboard.Get_check())
-				mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Check! Black") : colorLable->SetWindowTextW(L"Check! White");
-
-			else if (mboard.Get_checkmate())
-				mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Checkmate! White WIN") : colorLable->SetWindowTextW(L"Checkmate! Black WIN");
-
-			else if (mboard.Get_stalemate())
-				colorLable->SetWindowTextW(L"DRAW");
-
-			else if (!mboard.Get_check())
-				mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Black") : colorLable->SetWindowTextW(L"White");
-
-			OnCtlColor(&dc1, colorLable, 6);
-			colorLable->SetFont(&colorsize);
-
-			
-		}
-		this->InvalidateRect(NULL, TRUE);
-	}
-	if (mboard.Get_promotion())
-	{
-		int i;
-		CPromotionDlg pDlg;
-
-
-		pDlg.ch = true;
-
-		if (IDOK == pDlg.DoModal())
-		{
-
-			i = pDlg.i;
-			mboard.Promotion(mboard.Get_board(), CoordinateToBoard(x, y), pDlg.i);
-		}
-		cout << mboard.Get_turn() << endl;
-		pDlg.DestroyWindow();
-
-		colorsize.DeleteObject();
-		colorsize.CreatePointFont(240, L"굴림");
-		//상황별 처리 표시
-
-		if (mboard.Get_check())
-			mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Check! Black") : colorLable->SetWindowTextW(L"Check! White");
-
-		else if (mboard.Get_checkmate())
-			mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Checkmate! White WIN") : colorLable->SetWindowTextW(L"Checkmate! Black WIN");
-
-		else if (mboard.Get_stalemate())
-			colorLable->SetWindowTextW(L"DRAW");
-
-		else if (!mboard.Get_check())
-			mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Black") : colorLable->SetWindowTextW(L"White");
-
-		colorLable->SetFont(&colorsize);
-		mboard.Set_promotion(false);
-		this->InvalidateRect(NULL, TRUE);
-	}
-	
 	CDialogEx::OnLButtonDown(nFlags, point);
 }
 
@@ -342,3 +291,67 @@ HBRUSH CmfctestDlg::OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor)
 //	
 //	return CDialogEx::OnCommand(wParam, lParam);
 //}
+
+
+BOOL CmfctestDlg::OnCommand(WPARAM wParam, LPARAM lParam)
+{
+	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
+	switch (LOWORD(wParam))
+	{
+	case 2501:
+		
+		mboard.Restard_Game();
+		Label_Print();
+		endGame = false;
+		break;
+	case 2502:
+		if (!endGame) 
+		{
+			CString csrt;
+			csrt.Format(L"%s is surrender \n %s WIN!!", mboard.Get_turn() % 2 == 0 ? L"Black" : L"White", mboard.Get_turn() % 2 == 0 ? L"White" : L"Black");
+			MessageBox(csrt, _T("Surrender"), MB_ICONINFORMATION);
+			endGame = true;
+		}
+		break;
+	}
+	return CDialogEx::OnCommand(wParam, lParam);
+}
+
+void CmfctestDlg::GameRule()
+{
+	if (mboard.Get_check())
+	{
+		mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Check! Black") : colorLable->SetWindowTextW(L"Check! White");
+		cout << "CHECK" << endl;
+	}
+
+	else if (mboard.Get_checkmate())
+	{
+		CString csrt;
+		csrt.Format(L"Checkmate \n %s WIN!!", mboard.Get_turn() % 2 == 1 ? L"Black" : L"White");
+		MessageBox(csrt, _T("Checkmate"), MB_ICONINFORMATION);
+		mboard.Get_turn() % 2 == 1 ? colorLable->SetWindowTextW(L"Checkmate! Black WIN") : colorLable->SetWindowTextW(L"Checkmate! White WIN");
+		endGame = true;
+	}
+	else if (mboard.Get_stalemate())
+	{
+		CString csrt;
+		csrt.Format(L"Stalemate \n!!DRAW!!");
+		MessageBox(csrt, _T("Stalemate"), MB_ICONINFORMATION);
+		colorLable->SetWindowTextW(L"DRAW");
+		endGame = true;
+	}
+	else if (!mboard.Get_check()) 
+	{
+		mboard.Get_turn() % 2 == 0 ? colorLable->SetWindowTextW(L"Black") : colorLable->SetWindowTextW(L"White");
+		cout << "!CHECK" << endl;
+	}
+}
+
+void CmfctestDlg::Label_Print()
+{
+	colorsize.DeleteObject();
+	colorsize.CreatePointFont(240, L"굴림");
+	colorLable->SetFont(&colorsize);
+	this->InvalidateRect(NULL, TRUE);
+}

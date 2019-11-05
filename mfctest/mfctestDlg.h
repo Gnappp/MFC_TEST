@@ -52,9 +52,13 @@ protected:
 	int CoordinateToBoard(int x, int y);
 	CString ColorToString(PlayerColor playerColor);
 	CString PieceToString(PieceType pieceType);
+	bool endGame;
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnLButtonDown(UINT nFlags, CPoint point);
 	afx_msg HBRUSH OnCtlColor(CDC* pDC, CWnd* pWnd, UINT nCtlColor);
 //	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
+	void GameRule();
+	void Label_Print();
 };

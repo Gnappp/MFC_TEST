@@ -51,7 +51,10 @@ public:
 	
 	//Board(unique_ptr<Piece> board[]);
 	unique_ptr<Piece>* MakeBoard();
+	CString PieceToString(PieceType pieceType);
+	CString Board::ColorToString(PlayerColor playerColor);
 	unique_ptr<Piece>* Get_board();
+	void Restard_Game();
 	Piece* Get_Piece(unique_ptr<Piece> board[],int pos);
 	char PieceTypeChar(Piece* piece);
 	int ChangePositionStringToInt(string pos);

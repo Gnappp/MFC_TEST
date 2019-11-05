@@ -61,8 +61,8 @@ unique_ptr<Piece>* Board::MakeBoard()
 	mboard[55] = std::make_unique<Pawn>(PlayerColor::Black, 55);
 	mboard[56] = std::make_unique<Pawn>(PlayerColor::Black, 56);
 	this->mboard = mboard;
-	cout << "RRR" << endl;
-
+	
+	
 	/*
 	//캐슬링
 	unique_ptr<Piece>* mboard = new unique_ptr<Piece>[65];
@@ -73,6 +73,7 @@ unique_ptr<Piece>* Board::MakeBoard()
 	mboard[57] = std::make_unique<Rook>(PlayerColor::Black, 57);
 	mboard[61] = std::make_unique<King>(PlayerColor::Black, 61);
 	mboard[64] = std::make_unique<Rook>(PlayerColor::Black, 64);
+	this->mboard = mboard;
 	*/
 	/*
 	//스테일메이트
@@ -82,7 +83,9 @@ unique_ptr<Piece>* Board::MakeBoard()
 	board[9] = std::make_unique<Rook>(PlayerColor::Black, 9);
 	board[61] = std::make_unique<King>(PlayerColor::Black, 61);
 	board[62] = std::make_unique<Rook>(PlayerColor::Black, 62);
-*/
+	mboard = board;
+	*/
+
 	/*
 	unique_ptr<Piece>* board = new unique_ptr<Piece>[65];
 	board[8] = std::make_unique<King>(PlayerColor::White, 8);
@@ -91,15 +94,94 @@ unique_ptr<Piece>* Board::MakeBoard()
 	board[9]->Set_doMove(true);
 	board[61] = std::make_unique<King>(PlayerColor::Black, 61);
 	board[62] = std::make_unique<Rook>(PlayerColor::Black, 62);
+	
+	mboard = board;
 	*/
-	//mboard = board;
+
+	for (int i = 1; i < 65; i++)
+	{
+		if (this->mboard[i] != nullptr)
+		{
+			CString fileName;
+			fileName.Format(L"Pieces\\%s_%s.png", ColorToString(this->mboard[i]->get_PlayerColor()), PieceToString(this->mboard[i]->get_PieceType()));
+			this->mboard[i]->imgsrc.Load(fileName);
+		}
+	}
 	return mboard;
 	
+}
+
+CString Board::ColorToString(PlayerColor playerColor)
+{
+	CString res;
+	switch (playerColor)
+	{
+	case PlayerColor::Black:
+		res.Format(L"Black");
+		return res;
+		break;
+	case PlayerColor::White:
+		res.Format(L"White");
+		return res;
+		break;
+	}
+}
+
+CString Board::PieceToString(PieceType pieceType)
+{
+	CString res;
+	switch (pieceType)
+	{
+	case PieceType::BISHOP:
+		res.Format(L"BISHOP");
+		return res;
+		break;
+	case PieceType::KING:
+		res.Format(L"KING");
+		return res;
+		break;
+	case PieceType::KNIGHT:
+		res.Format(L"KNIGHT");
+		return res;
+		break;
+	case PieceType::PAWN:
+		res.Format(L"PAWN");
+		return res;
+		break;
+	case PieceType::QUEEN:
+		res.Format(L"QUEEN");
+		return res;
+		break;
+	case PieceType::ROOK:
+		res.Format(L"ROOK");
+		return res;
+		break;
+	}
 }
 
 unique_ptr<Piece>* Board::Get_board()
 {
 	return mboard;
+}
+
+void Board::Restard_Game()
+{
+	delete[] mboard;
+	surrender = false;
+	check = false;
+	castling = false;
+	checkmate = false;
+	stalemate = false;
+	promotion = false;
+	turn = 0;
+	selectMoveIntPos = 0;
+	kingSideCastling = 0;
+	queenSideCastling = 0;
+	selectPieceIntPos = 0;
+	checkPos = 0;
+	mboard = nullptr;
+	selected=false;
+	MakeBoard();
 }
 
 Piece* Board::Get_Piece(unique_ptr<Piece> board[],int pos)
@@ -317,10 +399,12 @@ int Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 {
 	selectMoveIntPos = selPos;
 	bool find_pos;
-
+	//프로모션으로 리턴됐을때
 	if (promotion)
 	{
 		int enemyKing;
+
+		cout << selectMoveIntPos << endl;
 		//체크
 		if (enemyKing = Check_Check(board, selectMoveIntPos, PlayerColor(turn % 2))) //체크 확인
 		{
@@ -329,7 +413,7 @@ int Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 		}
 
 		//스테일메이트
-		if (StalemateCheck(board, PlayerColor(turn % 2)))
+		if (StalemateCheck(board, PlayerColor(turn % 2)) && !check)
 		{
 			check = false;
 			checkmate = false;
@@ -394,6 +478,7 @@ int Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 		selectPieceIntPos = 0;
 		selectMoveIntPos = 0;
 		movablePlace.clear();
+		promotion = false;
 		if (an_passnt.turn != turn)
 		{
 			an_passnt.an_passntPos = 0;
@@ -404,6 +489,7 @@ int Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 		return 99;
 	}
 
+	//일반
 	if (selected)
 	{
 		if (selectMoveIntPos == 99)
@@ -491,7 +577,7 @@ int Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 					selectPieceIntPos = selectMoveIntPos;
 					promotion = true;
 					selectPieceIntPos = ptr;
-					return 99;
+					return 89;
 				}
 			}
 
@@ -504,13 +590,14 @@ int Board::PieceMove(unique_ptr<Piece> board[], int selPos)
 			}
 
 			//스테일메이트
-			if (StalemateCheck(board, PlayerColor(turn % 2)))
+			if (StalemateCheck(board, PlayerColor(turn % 2))&&!check)
 			{
 				check = false;
 				checkmate = false;
 				stalemate = true;
 				selected = false;
 				find_pos = false;
+				promotion = false;
 				kingSideCastling = 0;
 				queenSideCastling = 0;
 				selectPieceIntPos = 0;
@@ -685,7 +772,8 @@ bool Board::CheckmateMoveSimulation(unique_ptr<Piece> board[],int enemyKing, vec
 
 bool Board::StalemateCheck(unique_ptr<Piece> board[], PlayerColor nowPlayer)
 {
-	vector<int> movable;
+	vector<int> kingmovable;
+	vector<int> piecemovable;
 	for (int i = 1; i < 65; i++)
 	{
 		if (board[i] != nullptr)
@@ -693,16 +781,24 @@ bool Board::StalemateCheck(unique_ptr<Piece> board[], PlayerColor nowPlayer)
 			if (board[i]->get_PlayerColor() != nowPlayer)
 			{
 				if (board[i]->get_PieceType() == PieceType::KING) {
-					movable = KingMovable(board, board[i]->CanMovePlace(board), i, board[i]->get_PlayerColor());
+					kingmovable = KingMovable(board, board[i]->CanMovePlace(board), i, board[i]->get_PlayerColor());
 				}
 				
-				if (movable.size() != 0)
+				else 
+				{
+					piecemovable= board[i]->CanMovePlace(board);
+					cout << piecemovable.size() << endl;
+				}
+
+				if (kingmovable.size() != 0 || piecemovable.size() != 0)
+				{
 					return false;
+				}
 
 			}
 		}
 	}
-	if (movable.size() == 0)
+	if (kingmovable.size() == 0 || piecemovable.size() == 0)
 		return true;
 }
 
@@ -845,6 +941,8 @@ void Board::Promotion(unique_ptr<Piece> board[], int pos, int selNum)
 	selectPieceIntPos = 0;
 	//Draw_Board();
 }
+
+
 
 bool Board::Get_Selected()
 {
